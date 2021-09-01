@@ -1,0 +1,33 @@
+# DataSource Config
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.106.84.138/carHelper?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: password
+
+
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 2
+    lettuce:
+      shutdown-timeout: 0
+
+    timeout: 1200
+server:
+  port: 8996
+  tomcat:
+    uri-encoding: UTF-8
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix: tb_
+
