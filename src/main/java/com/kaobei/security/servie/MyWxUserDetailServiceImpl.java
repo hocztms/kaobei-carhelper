@@ -30,6 +30,7 @@ public class MyWxUserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String code) throws UsernameNotFoundException {
         String openId =null;
 
+
         //获取openId
         try {
             openId = wxUtils.getOpenIdByCode(code);
