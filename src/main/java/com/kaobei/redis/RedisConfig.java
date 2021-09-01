@@ -33,18 +33,6 @@ public class RedisConfig {
         return template;
     }
 
-    @Bean(name = "template")
-    public RedisTemplate<String, Object> template(RedisConnectionFactory factory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        //关联
-        template.setConnectionFactory(factory);
-        //设置key的序列化器
-        template.setKeySerializer(new StringRedisSerializer());
-        //设置value的序列化器
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
-//        template.setEnableTransactionSupport(true);
-        return template;
-    }
 
     @Bean
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -74,19 +62,6 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-
-    @Bean(name = "codeRedisTemplate")
-    public RedisTemplate<String, String> coderedisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-        //关联
-        template.setConnectionFactory(factory);
-        //设置key的序列化器
-        template.setKeySerializer(new StringRedisSerializer());
-        //设置value的序列化器
-        template.setValueSerializer(new StringRedisSerializer());
-//        template.setEnableTransactionSupport(true);
-        return template;
-    }
 
     @Bean(name = "limitRedisTemplate")
     public RedisTemplate<String, Long> limitRedisTemplate(RedisConnectionFactory factory) {

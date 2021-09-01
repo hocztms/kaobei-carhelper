@@ -29,13 +29,13 @@ public class JwtAuthService {
 
 
     public RestResult adminLogin(String username, String password) {
+        System.out.println(username + password);
         Authentication authentication;
         try {
             // 进行身份验证,
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {
-
             redisService.setUserLoginLimit(username);
             return new RestResult(0, e.getMessage(), null);
         }

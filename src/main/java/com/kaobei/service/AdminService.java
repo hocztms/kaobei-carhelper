@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface AdminService {
 
+    void insertAdmin(AdminEntity adminEntity);
 
     AdminEntity findAdminByUsername(String username);
 
