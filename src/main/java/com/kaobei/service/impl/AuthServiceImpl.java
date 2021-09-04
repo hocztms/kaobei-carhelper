@@ -1,22 +1,24 @@
-package com.kaobei.security.jwt;
+package com.kaobei.service.impl;
 
 import com.kaobei.commons.RestResult;
 import com.kaobei.redis.RedisService;
 import com.kaobei.security.config.WxLoginAuthenticationToken;
 import com.kaobei.security.entity.MyUserDetails;
+import com.kaobei.utils.JwtTokenUtils;
+import com.kaobei.service.AuthService;
+import com.kaobei.vo.AdminVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Service
 @Slf4j
-public class JwtAuthService {
+public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -27,16 +29,17 @@ public class JwtAuthService {
     @Autowired
     private RedisService redisService;
 
-
-    public RestResult adminLogin(String username, String password) {
-        System.out.println(username + password);
+    @Override
+    public RestResult adminLogin(AdminVo adminVo) {
         Authentication authentication;
         try {
             // 进行身份验证,
             authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password));
+                    new UsernamePasswordAuthenticationToken(adminVo.getUsername(), adminVo.getPassword()));
         } catch (Exception e) {
-            redisService.setUserLoginLimit(username);
+
+            //设置登入密码错误限制
+            redisService.setUserLoginLimit(adminVo.getUsername());
             return new RestResult(0, e.getMessage(), null);
         }
 
@@ -46,7 +49,7 @@ public class JwtAuthService {
         log.info("管理员:{} 已经登入。。。本次权限为:{}", loginUser.getUsername(), loginUser.getAuthorities().toString());
 
         //主动失效 设置黑名单 并关闭已存在socket
-        if (redisService.userLogoutByServer(username) == 0) {
+        if (redisService.userLogoutByServer(adminVo.getUsername()) == 0) {
             return null;
         }
 
@@ -54,7 +57,8 @@ public class JwtAuthService {
         return result;
     }
 
-    public RestResult wxUserLogin(String code) {
+    @Override
+    public RestResult userWxLogin(String code) {
         Authentication authentication;
         try {
             // 进行身份验证,
@@ -78,16 +82,6 @@ public class JwtAuthService {
 
         result.put("token", jwtTokenUtils.generateToken(loginUser, "user"));
         return result;
-    }
-
-
-    public String getToken(HttpServletRequest request) {
-        return request.getHeader(jwtTokenUtils.getHeader());
-    }
-
-
-    public String getAccountFromToken(HttpServletRequest request) {
-        return jwtTokenUtils.getAuthAccountFromToken(request.getHeader(jwtTokenUtils.getHeader()));
     }
 
 

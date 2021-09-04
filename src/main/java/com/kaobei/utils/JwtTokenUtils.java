@@ -1,4 +1,4 @@
-package com.kaobei.security.jwt;
+package com.kaobei.utils;
 
 import com.kaobei.redis.RedisService;
 import io.jsonwebtoken.Claims;
@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
@@ -27,7 +28,7 @@ public class JwtTokenUtils {
 
     private int expiration = 3600000;
 
-    private String header = "token";
+    public static  final String TOKEN_HEADER = "token";
 
 
     private static Key KEY = null;
@@ -169,5 +170,9 @@ public class JwtTokenUtils {
             }
         }
         return KEY;
+    }
+
+    public String getAuthAccountFromRequest(HttpServletRequest request){
+        return getAuthAccountFromToken(request.getHeader(TOKEN_HEADER));
     }
 }
