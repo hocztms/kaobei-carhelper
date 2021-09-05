@@ -20,14 +20,4 @@ public class AuthController {
     public RestResult wxLogin(String code){
         return jwtAuthService.wxUserLogin(code);
     }
-
-    @RequestMapping(value = "/getPlateByPicture")
-    public RestResult getPlateByPicture(String fileName){
-        return jwtAuthService.getPlateByPicture(fileName);
-    }
-    //@CrossOrigin
-    @RequestMapping(value = "/doneLoad")
-    public RestResult doneLoad(MultipartFile file){
-        return jwtAuthService.doneLoad(file);
-    }
 }
