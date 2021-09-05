@@ -31,7 +31,6 @@ public class MyWxUserDetailServiceImpl implements UserDetailsService {
         System.out.println("21213");
         String openId =null;
 
-
         //获取openId
         try {
             openId = wxUtils.getOpenIdByCode(code);
