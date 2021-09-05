@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 //自定义 微信登入逻辑
@@ -21,13 +22,14 @@ public class WxLoginAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // TODO Auto-generated method stub
         String code = authentication.getName();// 这个获取表单输入中返回的用户名;
-        if (userDetailService==null){
-            System.out.println("okl");
+
+        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (userDetails == null){
+            userDetails = (MyUserDetails) userDetailService.loadUserByUsername(code);
         }
 
-
-        MyUserDetails userInfo = (MyUserDetails) userDetailService.loadUserByUsername(code);
-        return new WxLoginAuthenticationToken(userInfo, "vxLogin", userInfo.getAuthorities());
+        return new WxLoginAuthenticationToken(userDetails, "vxLogin", userDetails.getAuthorities());
     }
 
     @Override
