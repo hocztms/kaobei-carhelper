@@ -4,7 +4,7 @@ package com.kaobei.security.config;
 import com.kaobei.security.hander.MyAccessDeniedHandler;
 import com.kaobei.security.hander.MyAuthenticationEntryPoint;
 import com.kaobei.security.hander.MyLogoutSuccessHandler;
-import com.kaobei.security.jwt.JwtAuthTokenFilter;
+import com.kaobei.filters.JwtAuthTokenFilter;
 import com.kaobei.security.servie.MyAdminDetailServiceImpl;
 import com.kaobei.security.xss.XssFilter;
 import org.springframework.beans.factory.annotation.Autowired;

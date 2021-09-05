@@ -28,6 +28,7 @@ public class MyWxUserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String code) throws UsernameNotFoundException {
+        System.out.println("21213");
         String openId =null;
 
 

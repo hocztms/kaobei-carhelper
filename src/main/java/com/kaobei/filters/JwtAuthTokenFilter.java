@@ -1,4 +1,4 @@
-package com.kaobei.security.jwt;
+package com.kaobei.filters;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kaobei.commons.RestResult;
@@ -6,6 +6,7 @@ import com.kaobei.security.config.WxLoginAuthenticationToken;
 import com.kaobei.security.entity.MyUserDetails;
 import com.kaobei.security.servie.MyAdminDetailServiceImpl;
 import com.kaobei.security.servie.MyWxUserDetailServiceImpl;
+import com.kaobei.utils.JwtTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,10 +25,8 @@ import java.io.PrintWriter;
 @Slf4j
 public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtAuthService jwtAuthService;
-
-    @Autowired
     private JwtTokenUtils jwtTokenUtils;
+
 
     @Autowired
     private MyAdminDetailServiceImpl adminDetailService;
@@ -37,7 +36,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         try {
-            String token = jwtAuthService.getToken(request);
+            String token = request.getHeader(JwtTokenUtils.TOKEN_HEADER);
             if (token != null && token.length() > 0) {
 
                 String account = jwtTokenUtils.getAuthAccountFromToken(token);
