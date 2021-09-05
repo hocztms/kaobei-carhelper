@@ -5,11 +5,9 @@ import com.kaobei.security.entity.MyUserDetails;
 import com.kaobei.security.servie.MyWxUserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 //自定义 微信登入逻辑
@@ -26,15 +24,10 @@ public class WxLoginAuthenticationProvider implements AuthenticationProvider {
         if (userDetailService==null){
             System.out.println("okl");
         }
-        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 
-        if (userDetails==null){
-            userDetails = (MyUserDetails) userDetailService.loadUserByUsername(code);
-            return new WxLoginAuthenticationToken(userDetails, "vxLogin", userDetails.getAuthorities());
-        }
-
-        return new WxLoginAuthenticationToken(userDetails, "vxLogin", userDetails.getAuthorities());
+        MyUserDetails userInfo = (MyUserDetails) userDetailService.loadUserByUsername(code);
+        return new WxLoginAuthenticationToken(userInfo, "vxLogin", userInfo.getAuthorities());
     }
 
     @Override
