@@ -98,15 +98,15 @@ public class JwtAuthService {
     }
 
 
-    public String doneLoad(MultipartFile file) {
-        String result = null;
+    public RestResult doneLoad(MultipartFile file) {
         if (file.isEmpty()){
-            return "文件为空";
+            return new RestResult(0,"文件为空",null);
         }
         String fileName=null;
         String name=file.getOriginalFilename();
         String[] a = name.split("\\.");
         String type=a[a.length-1];
+        RestResult result = null;
         if (type.equals("png")||type.equals("jpg")){
             fileName = String.valueOf(UUID.randomUUID())+"."+type;
             String path="C:\\upload";
@@ -156,13 +156,12 @@ public class JwtAuthService {
                     e.printStackTrace();
                 }
             }
-            result=fileName;
+            result = new RestResult(1, "文件传输成功", fileName);
         }
         return result;
     }
 
-    public String getPlateByPicture(String fileName) {
-        String result="failed";
+    public RestResult getPlateByPicture(String fileName) {
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
         try {
             // 本地文件路径
@@ -173,11 +172,10 @@ public class JwtAuthService {
             String param = "image=" + imgParam;
             // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
             String accessToken = AuthService.getAuth();//[调用鉴权接口获取的token]
-            result = HttpUtil.post(url, accessToken, param);
-            return result;
+            return new RestResult(1,"识别成功", HttpUtil.post(url, accessToken, param));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return new RestResult(0,"识别错误",null);
     }
 }

@@ -17,17 +17,17 @@ public class AuthController {
     private JwtAuthService jwtAuthService;
 
     @RequestMapping("/wxLogin")
-    public RestResult wxLogin(){
-        return jwtAuthService.wxUserLogin("123");
+    public RestResult wxLogin(String code){
+        return jwtAuthService.wxUserLogin(code);
     }
 
     @RequestMapping(value = "/getPlateByPicture")
-    public String getPlateByPicture(String fileName){
+    public RestResult getPlateByPicture(String fileName){
         return jwtAuthService.getPlateByPicture(fileName);
     }
     //@CrossOrigin
     @RequestMapping(value = "/doneLoad")
-    public String doneLoad(MultipartFile file){
+    public RestResult doneLoad(MultipartFile file){
         return jwtAuthService.doneLoad(file);
     }
 }
