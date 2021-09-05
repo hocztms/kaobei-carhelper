@@ -2,12 +2,11 @@ package com.kaobei.controller;
 
 import com.kaobei.commons.RestResult;
 import com.kaobei.security.jwt.JwtAuthService;
-import com.kaobei.utils.ResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/auth")
 @PreAuthorize("permitAll()")
@@ -20,5 +19,15 @@ public class AuthController {
     @RequestMapping("/wxLogin")
     public RestResult wxLogin(){
         return jwtAuthService.wxUserLogin("123");
+    }
+
+    @RequestMapping(value = "/getPlateByPicture")
+    public String getPlateByPicture(String fileName){
+        return jwtAuthService.getPlateByPicture(fileName);
+    }
+    //@CrossOrigin
+    @RequestMapping(value = "/doneLoad")
+    public String doneLoad(MultipartFile file){
+        return jwtAuthService.doneLoad(file);
     }
 }
