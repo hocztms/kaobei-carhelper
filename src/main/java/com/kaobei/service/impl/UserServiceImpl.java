@@ -11,6 +11,9 @@ import com.kaobei.util.BaiduUtil.AuthService;
 import com.kaobei.util.BaiduUtil.Base64Util;
 import com.kaobei.util.BaiduUtil.FileUtil;
 import com.kaobei.util.HttpUtil;
+import com.kaobei.utils.ResultUtils;
+import com.kaobei.vo.DownLodeVo;
+import com.kaobei.vo.GetPlateVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,9 +52,10 @@ public class UserServiceImpl implements UserService {
         return userRoleMapper.selectList(wrapper);
     }
 
-    public RestResult doneLoad(MultipartFile file) {
+    public RestResult doneLoad(DownLodeVo downLodeVo) {
+        MultipartFile file=downLodeVo.getFile();
         if (file.isEmpty()){
-            return new RestResult(0,"文件为空",null);
+            return ResultUtils.systemError();
         }
         String fileName=null;
         String name=file.getOriginalFilename();
@@ -107,12 +111,13 @@ public class UserServiceImpl implements UserService {
                     e.printStackTrace();
                 }
             }
-            result = new RestResult(1, "文件传输成功", fileName);
+            result =ResultUtils.success(fileName);
         }
         return result;
     }
 
-    public RestResult getPlateByPicture(String fileName) {
+    public RestResult getPlateByPicture(GetPlateVo getPlateVo) {
+        String fileName=getPlateVo.getFileName();
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
         try {
             // 本地文件路径
@@ -123,10 +128,10 @@ public class UserServiceImpl implements UserService {
             String param = "image=" + imgParam;
             // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
             String accessToken = AuthService.getAuth();//[调用鉴权接口获取的token]
-            return new RestResult(1,"识别成功", HttpUtil.post(url, accessToken, param));
+            return ResultUtils.success(HttpUtil.post(url, accessToken, param));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new RestResult(0,"识别错误",null);
+        return ResultUtils.systemError();
     }
 }
