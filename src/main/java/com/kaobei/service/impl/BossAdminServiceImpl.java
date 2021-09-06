@@ -1,7 +1,9 @@
 package com.kaobei.service.impl;
 
 import com.kaobei.commons.RestResult;
+import com.kaobei.commons.Role;
 import com.kaobei.entity.AdminEntity;
+import com.kaobei.entity.AdminRoleEntity;
 import com.kaobei.entity.AreaEntity;
 import com.kaobei.service.AdminService;
 import com.kaobei.service.AreaService;
@@ -39,14 +41,15 @@ public class BossAdminServiceImpl implements BossAdminService {
     @Override
     public RestResult bossCreateAreaAdmin(AreaAdminVo adminVo) {
         try {
-            AdminEntity areaEntity = AdminEntity.builder()
+            AdminEntity adminEntity = AdminEntity.builder()
                     .areaId(adminVo.getAreaId())
                     .username(adminVo.getUsername())
                     .password(adminVo.getPassword())
                     .status(1)
                     .build();
 
-            adminService.insertAdmin(areaEntity);
+            adminService.insertAdmin(adminEntity);
+            adminService.insertAdminRole(new AdminRoleEntity(adminEntity.getUsername(), Role.AREA_ADMIN));
             return ResultUtils.success();
         }catch (Exception e){
             e.printStackTrace();

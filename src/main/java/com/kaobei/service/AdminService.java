@@ -9,6 +9,8 @@ public interface AdminService {
 
     void insertAdmin(AdminEntity adminEntity);
 
+    void insertAdminRole(AdminRoleEntity adminRoleEntity);
+
     AdminEntity findAdminByUsername(String username);
 
     List<AdminRoleEntity> findAdminRolesByUsername(String username);
