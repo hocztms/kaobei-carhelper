@@ -6,7 +6,7 @@ import com.kaobei.service.AuthService;
 import com.kaobei.utils.AuthUtils;
 import com.kaobei.utils.JwtTokenUtils;
 import com.kaobei.utils.ResultUtils;
-import com.kaobei.vo.AdminVo;
+import com.kaobei.vo.AdminLoginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,8 +48,8 @@ public class AuthController {
     后台管理员登入接口
      */
     @PostMapping("/adminLogin")
-    public RestResult adminLogin(@Validated  @RequestBody AdminVo adminVo){
-        return authService.adminLogin(adminVo);
+    public RestResult adminLogin(@Validated  @RequestBody AdminLoginVo adminLoginVo){
+        return authService.adminLogin(adminLoginVo);
     }
 
     /*

@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminVo {
+public class AdminLoginVo {
 
 
     @NotBlank(message = "用户名不能为空")

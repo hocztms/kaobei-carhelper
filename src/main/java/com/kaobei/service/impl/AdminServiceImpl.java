@@ -27,6 +27,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void insertAdminRole(AdminRoleEntity adminRoleEntity) {
+        adminRoleMapper.insert(adminRoleEntity);
+    }
+
+    @Override
     public AdminEntity findAdminByUsername(String username) {
         QueryWrapper<AdminEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("username",username);
