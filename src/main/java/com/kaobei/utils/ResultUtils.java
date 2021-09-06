@@ -40,11 +40,10 @@ public class ResultUtils {
         return result;
     }
 
-    public static RestResult systemError(Exception e) {
+    public static RestResult systemError() {
         RestResult result = new RestResult();
         result.setCode(-1);
         result.setMsg("error");
-        result.setData(e);
         return result;
     }
 }
