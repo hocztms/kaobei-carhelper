@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/user")
-@PreAuthorize("permitAll()")
+@PreAuthorize("hasAuthority('user')")
 @RestController
 public class UserFileController {
     @Autowired

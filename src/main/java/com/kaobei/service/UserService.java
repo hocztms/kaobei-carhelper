@@ -20,4 +20,6 @@ public interface UserService {
     RestResult getPlateByPicture(GetPlateVo getPlateVo);
 
     RestResult doneLoad(DownLodeVo downLodeVo);
+
+    void setInitRole(UserRoleEntity user);
 }

@@ -116,6 +116,11 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public void setInitRole(UserRoleEntity user) {
+        userRoleMapper.insert(user);
+    }
+
     public RestResult getPlateByPicture(GetPlateVo getPlateVo) {
         String fileName=getPlateVo.getFileName();
         String url = "https://aip.baidubce.com/rest/2.0/ocr/v1/license_plate";
