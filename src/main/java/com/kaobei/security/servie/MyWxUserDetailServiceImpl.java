@@ -42,7 +42,7 @@ public class MyWxUserDetailServiceImpl implements UserDetailsService {
 
 
         if (user==null){
-            userService.insertUser(new UserEntity(openId,null,0));
+            userService.insertUser(new UserEntity(openId,null,0.00));
             userService.setInitRole(new UserRoleEntity(openId,"user"));
         }
 
