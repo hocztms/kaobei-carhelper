@@ -14,6 +14,7 @@ import com.kaobei.util.HttpUtil;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
+import com.kaobei.vo.SetPlateVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,6 +121,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void setInitRole(UserRoleEntity user) {
         userRoleMapper.insert(user);
+    }
+
+    @Override
+    public RestResult setPlate(SetPlateVo setPlateVo,String openId) {
+        QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("open_id",openId);
+        UserEntity userEntity=userMapper.selectOne(wrapper);
+        userEntity.setCarNumber(setPlateVo.getPlate());
+        userMapper.update(userEntity,wrapper);
+        return new RestResult(1,"绑定成功",null);
     }
 
     public RestResult getPlateByPicture(GetPlateVo getPlateVo) {

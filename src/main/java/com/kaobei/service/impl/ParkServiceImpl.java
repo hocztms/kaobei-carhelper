@@ -16,12 +16,13 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ParkServiceImpl implements ParkService {
-    @Autowired
+    @Resource
     private ParkMapper parkMapper;
     @Autowired
     private RedisGeoUtils redisGeoUtils;
