@@ -1,5 +1,6 @@
 package com.kaobei.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.entity.AreaEntity;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface AreaService {
 
     void deleteAreaById(Long areaId);
 
-    List<AreaEntity> findAreaPage(Long page, Long size);
+    List<AreaEntity> findAreaPage(IPage iPage);
 }

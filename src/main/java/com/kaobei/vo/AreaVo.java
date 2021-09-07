@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class AreaVo {
 
-    @NotNull(message = "不能为空")
+    @NotNull(message = "区域id不能为空")
     private Long areaId;
 
 

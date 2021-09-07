@@ -1,6 +1,7 @@
 package com.kaobei.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.BossAdminService;
 import com.kaobei.vo.AreaAdminVo;
@@ -33,6 +34,6 @@ public class BossAdminController {
 
     @GetMapping("/getAreaPage")
     public RestResult createAreaAdmin(long page,long size){
-        return bossAdminService.bossGetAreaPage(page,size);
+        return bossAdminService.bossGetAreaPage(new Page(page,size));
     }
 }

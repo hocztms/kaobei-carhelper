@@ -5,12 +5,14 @@ spring:
     url: jdbc:mysql://47.106.84.138/carHelper?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: password
+    hikari:
+      max-lifetime: 500000
 
 
   cache:
     type: redis
   redis:
-    host: 127.0.0.1
+    host: 47.106.84.138
     port: 6379
     jedis:
       pool:
