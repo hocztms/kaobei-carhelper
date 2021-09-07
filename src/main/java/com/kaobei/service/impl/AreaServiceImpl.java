@@ -1,6 +1,7 @@
 package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.entity.AreaEntity;
 import com.kaobei.mapper.AreaMapper;
@@ -32,8 +33,8 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
-    public List<AreaEntity> findAreaPage(Long page, Long size) {
+    public List<AreaEntity> findAreaPage(IPage page) {
         QueryWrapper<AreaEntity> wrapper = new QueryWrapper<>();
-        return areaMapper.selectPage(new Page<>(page,size),wrapper).getRecords();
+        return areaMapper.selectPage(page,wrapper).getRecords();
     }
 }

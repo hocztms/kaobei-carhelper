@@ -1,5 +1,6 @@
 package com.kaobei.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.commons.Role;
 import com.kaobei.entity.AdminEntity;
@@ -12,6 +13,7 @@ import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.AreaAdminVo;
 import com.kaobei.vo.AreaVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +23,9 @@ public class BossAdminServiceImpl implements BossAdminService {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
 
@@ -44,8 +49,9 @@ public class BossAdminServiceImpl implements BossAdminService {
             AdminEntity adminEntity = AdminEntity.builder()
                     .areaId(adminVo.getAreaId())
                     .username(adminVo.getUsername())
-                    .password(adminVo.getPassword())
+                    .password(passwordEncoder.encode(adminVo.getPassword()))
                     .status(1)
+                    .parkId(null)
                     .build();
 
             adminService.insertAdmin(adminEntity);
@@ -58,10 +64,9 @@ public class BossAdminServiceImpl implements BossAdminService {
     }
 
     @Override
-    public RestResult bossGetAreaPage(Long page, Long size) {
+    public RestResult bossGetAreaPage(IPage iPage) {
         try {
-
-            return ResultUtils.success(areaService.findAreaPage(page,size));
+            return ResultUtils.success(areaService.findAreaPage(iPage));
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

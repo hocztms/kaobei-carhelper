@@ -62,7 +62,9 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
 
-                .antMatchers("/socket/**").permitAll();
+                .antMatchers("/socket/**").permitAll()
+                .antMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated();
 
 
         //自定义未登录 无权限处理

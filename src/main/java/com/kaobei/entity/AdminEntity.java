@@ -15,6 +15,7 @@ public class AdminEntity {
 
     private String username;
     private String password;
-    private long areaId;
-    private int status;
+    private Long areaId;
+    private Long parkId;
+    private Integer status;
 }
