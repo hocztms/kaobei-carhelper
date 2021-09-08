@@ -3,6 +3,7 @@ package com.kaobei.security.config;
 
 import com.kaobei.security.entity.MyUserDetails;
 import com.kaobei.security.servie.MyWxUserDetailServiceImpl;
+import com.kaobei.utils.WxUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,22 +18,27 @@ public class WxLoginAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private MyWxUserDetailServiceImpl userDetailService;
-
+    @Autowired
+    private WxUtils wxUtils;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // TODO Auto-generated method stub
         String code = authentication.getName();// 这个获取表单输入中返回的用户名;
-        if (userDetailService==null){
-            System.out.println("okl");
+
+        String openId =null;
+
+        //获取openId
+        try {
+            openId = wxUtils.getOpenIdByCode(code);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("无效code");
         }
-        MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 
-        if (userDetails==null){
-            userDetails = (MyUserDetails) userDetailService.loadUserByUsername(code);
-            return new WxLoginAuthenticationToken(userDetails, "vxLogin", userDetails.getAuthorities());
-        }
+        MyUserDetails userDetails = (MyUserDetails) userDetailService.loadUserByUsername(openId);
+
 
         return new WxLoginAuthenticationToken(userDetails, "vxLogin", userDetails.getAuthorities());
     }

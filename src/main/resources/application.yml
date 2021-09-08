@@ -13,7 +13,7 @@ spring:
     type: redis
   redis:
     host: 47.106.84.138
-    port: 6379
+    port: 6378
     jedis:
       pool:
         max-active: 8
@@ -22,8 +22,8 @@ spring:
         min-idle: 2
     lettuce:
       shutdown-timeout: 0
-
     timeout: 1200
+    password: password
 server:
   port: 8996
   tomcat:

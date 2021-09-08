@@ -36,4 +36,9 @@ public class BossAdminController {
     public RestResult createAreaAdmin(long page,long size){
         return bossAdminService.bossGetAreaPage(new Page(page,size));
     }
+
+    @GetMapping("/getAreaRecordsPage")
+    public RestResult getAreaRecordsPage(long areaId,long page,long size){
+        return bossAdminService.bossGetAreaRecordPage(areaId,new Page(page,size));
+    }
 }

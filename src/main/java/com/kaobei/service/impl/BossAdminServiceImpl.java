@@ -3,18 +3,22 @@ package com.kaobei.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.commons.Role;
+import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.entity.AdminEntity;
 import com.kaobei.entity.AdminRoleEntity;
 import com.kaobei.entity.AreaEntity;
 import com.kaobei.service.AdminService;
 import com.kaobei.service.AreaService;
 import com.kaobei.service.BossAdminService;
+import com.kaobei.service.ParkRecordService;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.AreaAdminVo;
 import com.kaobei.vo.AreaVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BossAdminServiceImpl implements BossAdminService {
@@ -26,6 +30,8 @@ public class BossAdminServiceImpl implements BossAdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ParkRecordService parkRecordService;
 
 
 
@@ -67,6 +73,22 @@ public class BossAdminServiceImpl implements BossAdminService {
     public RestResult bossGetAreaPage(IPage iPage) {
         try {
             return ResultUtils.success(areaService.findAreaPage(iPage));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult bossGetAreaRecordPage(Long areaId, IPage iPage) {
+        try {
+            Double sum = parkRecordService.getAreaRecordsCostSum(areaId);
+            List<ParkRecordDto> areaRecordsByPage = parkRecordService.getAreaRecordsByPage(areaId, iPage);
+            RestResult restResult = new RestResult();
+            restResult.put("sum",sum);
+            restResult.put("records",areaRecordsByPage);
+
+            return restResult;
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

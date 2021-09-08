@@ -1,5 +1,6 @@
 package com.kaobei.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.commons.Role;
 import com.kaobei.entity.AdminEntity;
@@ -7,6 +8,7 @@ import com.kaobei.entity.AdminRoleEntity;
 import com.kaobei.entity.ParkEntity;
 import com.kaobei.service.AdminService;
 import com.kaobei.service.AreaAdminService;
+import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
 import com.kaobei.utils.RedisGeoUtils;
 import com.kaobei.utils.ResultUtils;
@@ -28,6 +30,8 @@ public class AreaAdminServiceImpl implements AreaAdminService {
     private RedisGeoUtils redisGeoUtils;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ParkRecordService parkRecordService;
 
 
     @Override
@@ -90,6 +94,18 @@ public class AreaAdminServiceImpl implements AreaAdminService {
             adminService.insertAdminRole(new AdminRoleEntity(admin.getUsername(), Role.PARK_ADMIN));
 
             return ResultUtils.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult areaAdminGetAreaParkPage(String username, IPage iPage) {
+        try {
+            AdminEntity adminEntity = adminService.findAdminByUsername(username);
+
+            return ResultUtils.success(parkRecordService);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

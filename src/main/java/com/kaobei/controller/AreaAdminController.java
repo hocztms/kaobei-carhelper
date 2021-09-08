@@ -1,6 +1,7 @@
 package com.kaobei.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.AreaAdminService;
 import com.kaobei.utils.JwtTokenUtils;
@@ -11,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,5 +39,13 @@ public class AreaAdminController {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
         return adminService.areaAdminCreateParkAdmin(parkAdminVo,account);
     }
+
+
+    @GetMapping("/getAreaParkPage")
+    public RestResult getAreaParkPage(long page,long size,HttpServletRequest request){
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        return adminService.areaAdminGetAreaParkPage(account,new Page(page,size));
+    }
+
 
 }

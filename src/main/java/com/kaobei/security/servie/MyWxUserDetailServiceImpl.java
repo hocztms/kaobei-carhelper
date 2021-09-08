@@ -27,17 +27,7 @@ public class MyWxUserDetailServiceImpl implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String code) throws UsernameNotFoundException {
-        System.out.println("21213");
-        String openId =null;
-
-        //获取openId
-        try {
-            openId = wxUtils.getOpenIdByCode(code);
-        } catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException("无效code");
-        }
+    public UserDetails loadUserByUsername(String openId) throws UsernameNotFoundException {
         UserEntity user = userService.findUserByOpenId(openId);
 
 

@@ -12,4 +12,6 @@ public interface BossAdminService {
     RestResult bossCreateAreaAdmin(AreaAdminVo adminVo);
 
     RestResult bossGetAreaPage(IPage iPage);
+
+    RestResult bossGetAreaRecordPage(Long areaId,IPage iPage);
 }

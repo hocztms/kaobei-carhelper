@@ -14,7 +14,6 @@ import com.kaobei.util.HttpUtil;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
-import com.kaobei.vo.SetPlateVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +44,13 @@ public class UserServiceImpl implements UserService {
         wrapper.eq("open_id",openId);
 
         return userMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public void updateUserByOpenId(UserEntity userEntity) {
+        QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("open_id", userEntity);
+        userMapper.update(userEntity,wrapper);
     }
 
     @Override

@@ -10,10 +10,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "tb_investRecord")
+@TableName(value = "tb_invest_record")
 public class InvestRecordEntity {
     private Long recordId;
     private String openId;
-    private Double amount;
+    private Double cost;
     private Date investTime;
 }

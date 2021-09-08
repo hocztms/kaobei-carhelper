@@ -31,7 +31,7 @@ public class WxUtils {
         String openId = (String) obj.get("openid");
         System.out.println(openId);
         return openId;
-        //return "123456";
+//        return "123456";
     }
 
 }

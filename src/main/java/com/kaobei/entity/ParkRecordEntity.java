@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "tb_parkRecord")
+@TableName(value = "tb_park_record")
 public class ParkRecordEntity {
 
     @TableId(value = "record_id",type = IdType.AUTO)
