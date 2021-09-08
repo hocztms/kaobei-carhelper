@@ -12,9 +12,7 @@ public interface ParkService {
 
     ParkEntity findParkById(Long parkId);
 
-
     void updateParkById(ParkEntity parkEntity);
-
 
     void deleteParkById(Long parkId);
 
@@ -29,7 +27,7 @@ public interface ParkService {
     radius 某一半径内
     count 元素个数
      */
-    List<ParkDto> findParkListByPosNear(Double lng, Double Lat, Double radius, Integer count);
+    List<ParkDto> findParkListByPosNear(Double lng, Double lat, Double radius, Integer count);
 
 
     /*

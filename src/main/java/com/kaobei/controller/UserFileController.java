@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RequestMapping("/user")
+@RequestMapping("/user/file/")
 @PreAuthorize("hasAuthority('user')")
 @RestController
 public class UserFileController {
