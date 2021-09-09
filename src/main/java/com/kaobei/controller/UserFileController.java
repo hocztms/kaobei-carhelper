@@ -23,7 +23,7 @@ public class UserFileController {
     }
     //@CrossOrigin
     @PostMapping( "/downLoad")
-    public RestResult doneLoad(@Validated  @RequestBody DownLodeVo downLodeVo){
-        return userService.doneLoad(downLodeVo);
+    public RestResult doneLoad(MultipartFile file){
+        return userService.doneLoad(file);
     }
 }

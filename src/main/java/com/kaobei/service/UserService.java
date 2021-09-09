@@ -5,6 +5,7 @@ import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
+import com.kaobei.vo.SetPlateVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,9 +22,9 @@ public interface UserService {
 
     RestResult getPlateByPicture(GetPlateVo getPlateVo);
 
-    RestResult doneLoad(DownLodeVo downLodeVo);
+    RestResult doneLoad(MultipartFile file);
 
     void setInitRole(UserRoleEntity user);
 
-    RestResult setPlate(SetPlateVo setPlateVo,String openId);
+    RestResult setPlate(SetPlateVo setPlateVo, String openId);
 }
