@@ -2,6 +2,7 @@ package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kaobei.commons.RestResult;
+import com.kaobei.dto.UserDto;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
 import com.kaobei.mapper.UserMapper;
@@ -15,6 +16,7 @@ import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,6 +139,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setCarNumber(setPlateVo.getPlate());
         userMapper.update(userEntity,wrapper);
         return new RestResult(1,"绑定成功",null);
+    }
+
+    @Override
+    public RestResult getPlate(String account) {
+        QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("open_id", account);
+        UserDto userDto=new UserDto();
+        BeanUtils.copyProperties(userMapper.selectById(wrapper),userDto);
+        return ResultUtils.success(userDto);
     }
 
     public RestResult getPlateByPicture(GetPlateVo getPlateVo) {

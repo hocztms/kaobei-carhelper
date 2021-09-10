@@ -38,11 +38,11 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         try {
 
             String token = request.getHeader(JwtTokenUtils.TOKEN_HEADER);
+            log.info("token:{}",token);
             if (token != null && token.length() > 0) {
 
                 String account = jwtTokenUtils.getAuthAccountFromToken(token);
                 String type = jwtTokenUtils.getAuthTypeFromToken(token);
-                log.info("account: {} 已登入 tpye: {} ", account, type);
                 if (account != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                     MyUserDetails userDetails = new MyUserDetails();
@@ -55,6 +55,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                     //判断token是否有效 包括 新旧token redis黑名单
                     if (jwtTokenUtils.validateToken(token, userDetails)) {
                         //给使用该JWT令牌的用户进行授权
+
+                        log.info("account: {} 已登入 tpye: {} ", account, type);
                         if ("admin".equals(type)) {
                             UsernamePasswordAuthenticationToken authenticationToken =
                                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
