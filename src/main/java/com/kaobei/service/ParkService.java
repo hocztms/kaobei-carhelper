@@ -12,11 +12,11 @@ public interface ParkService {
 
     ParkEntity findParkById(Long parkId);
 
-    void updateParkById(ParkEntity parkEntity);
+    ParkEntity updateParkById(ParkEntity parkEntity);
 
     void deleteParkById(Long parkId);
 
-    List<ParkEntity> findAreaParkPage(Long areaId,Long page,Long size);
+    IPage findAreaParkPage(Long areaId,IPage iPage);
 
 
 
@@ -36,4 +36,6 @@ public interface ParkService {
     List<ParkDto> findParkByKeyword(String keyword, IPage iPage);
 
     List<ParkEntity> getInitializationParkList();
+
+
 }

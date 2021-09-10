@@ -18,6 +18,7 @@ public class ParkAdminVo {
     private String username;
 
     @Pattern(regexp = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}", message = "密码长度限制6-20位并且至少包含一个数字或一个大写字母或一个小写字母")
+    @NotNull(message = "密码不能为空")
     private String password;
 
     @NotNull(message = "停车场id不能为空")

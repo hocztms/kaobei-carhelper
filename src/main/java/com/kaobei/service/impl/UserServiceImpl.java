@@ -5,18 +5,29 @@ import com.kaobei.commons.RestResult;
 import com.kaobei.dto.UserDto;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
+import com.kaobei.dto.PlaceDto;
+import com.kaobei.entity.*;
 import com.kaobei.mapper.UserMapper;
 import com.kaobei.mapper.UserRoleMapper;
+import com.kaobei.service.ParkRecordService;
+import com.kaobei.service.ParkService;
+import com.kaobei.service.PlaceService;
 import com.kaobei.service.UserService;
 import com.kaobei.util.BaiduUtil.AuthService;
 import com.kaobei.util.BaiduUtil.Base64Util;
 import com.kaobei.util.BaiduUtil.FileUtil;
 import com.kaobei.util.HttpUtil;
+import com.kaobei.utils.DtoEntityUtils;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
 import org.springframework.beans.BeanUtils;
+import com.kaobei.vo.SetPlateVo;
+import io.lettuce.core.RedisClient;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +35,27 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Resource
     private UserMapper userMapper;
     @Resource
     private UserRoleMapper userRoleMapper;
+    @Resource
+    private ParkRecordService parkRecordService;
+    @Resource
+    private RedissonClient redissonClient;
+    @Resource
+    private PlaceService placeService;
+    @Resource
+    private ParkService parkService;
 
 
     @Override
@@ -139,6 +161,69 @@ public class UserServiceImpl implements UserService {
         userEntity.setCarNumber(setPlateVo.getPlate());
         userMapper.update(userEntity,wrapper);
         return new RestResult(1,"绑定成功",null);
+    }
+
+    @Override
+    public RestResult userParkCar(Long parkId, String openId) {
+        try {
+            UserEntity userEntity = findUserByOpenId(openId);
+
+            ParkEntity parkEntity = parkService.findParkById(parkId);
+
+            if (parkRecordService.getUserIsParkByOpenId(openId)!=null){
+                return ResultUtils.error("请勿重复停车");
+            }
+
+
+            if (parkEntity.getPlaceNum()==0){
+                return ResultUtils.error("停车场已满");
+            }
+
+            RLock rLock = redissonClient.getFairLock(parkId.toString());
+
+            //设置基础值为非
+            boolean succeed = false;
+            try {
+
+                //等待50s
+                succeed = rLock.tryLock(50,20, TimeUnit.SECONDS);
+            }catch (Exception e){
+                e.printStackTrace();
+                return ResultUtils.error("服务繁忙请重试");
+            }
+
+            if (succeed){
+                log.info("用户:{}   正在抢车位",openId);
+                if (parkEntity.getPlaceNum()==0){
+                    return ResultUtils.error("停车场已满");
+                }
+
+                try {
+                    //抢车位
+                    ParkPlaceEntity parkPlaceEntity = placeService.userGrabParkPlaceByParkId(parkId);
+                    parkPlaceEntity.setIsOccupied(1);
+                    placeService.updateParkPlaceById(parkPlaceEntity);
+                    //创建记录
+                    parkRecordService.insertRecord(new ParkRecordEntity(0L,parkEntity.getAreaId(),parkId,parkPlaceEntity.getPlaceId(),userEntity.getOpenId(),new Date(),null,null,0,0));
+
+                    //修改外部可停数量
+                    parkEntity.setPlaceNum(parkEntity.getPlaceNum() -1);
+                    parkService.updateParkById(parkEntity);
+
+                    return ResultUtils.success(DtoEntityUtils.parseToObject(parkPlaceEntity, PlaceDto.class));
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return ResultUtils.error("服务繁忙");
+                }finally {
+                    rLock.unlock();
+                }
+            }
+
+            return ResultUtils.error("服务器繁忙");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
     }
 
     @Override

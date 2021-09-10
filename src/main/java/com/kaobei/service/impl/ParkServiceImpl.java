@@ -2,8 +2,6 @@ package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.api.R;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.dto.ParkDto;
 import com.kaobei.entity.ParkEntity;
 import com.kaobei.mapper.ParkMapper;
@@ -43,8 +41,9 @@ public class ParkServiceImpl implements ParkService {
 
     @Override
     @CachePut(value = "park",key = "#parkEntity.parkId")
-    public void updateParkById(ParkEntity parkEntity) {
+    public ParkEntity updateParkById(ParkEntity parkEntity) {
         parkMapper.updateById(parkEntity);
+        return parkEntity;
     }
 
     @Override
@@ -56,10 +55,10 @@ public class ParkServiceImpl implements ParkService {
 
 
     @Override
-    public List<ParkEntity> findAreaParkPage(Long areaId, Long page, Long size) {
+    public IPage findAreaParkPage(Long areaId,IPage iPage) {
         QueryWrapper<ParkEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("area_id",areaId);
-        return parkMapper.selectPage(new Page<>(page,size),wrapper).getRecords();
+        return parkMapper.selectPage(iPage,wrapper);
     }
 
     @Override

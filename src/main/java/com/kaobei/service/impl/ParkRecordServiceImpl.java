@@ -53,22 +53,39 @@ public class ParkRecordServiceImpl implements ParkRecordService {
     }
 
     @Override
-    public List<ParkRecordDto> getAreaRecordsByPage(Long areaId, IPage page) {
+    public List<ParkRecordDto> getAreaDayRecordsByPage(Long areaId, IPage page, Date date) {
 
         return parkRecordMapper.selectRecordsPageByAreaId(areaId, DateUtils.getZeroTime(),page);
     }
 
     @Override
-    public List<ParkRecordDto> getParkRecordsByPage(Long parkId, IPage page) {
-        return parkRecordMapper.selectRecordsPageByParkId(parkId,DateUtils.getZeroTime(),page);
+    public IPage getParkDateRecordsByPage(Long parkId, Date date, IPage page) {
+        QueryWrapper<ParkRecordEntity> wrapper = new QueryWrapper<>();
+
+        wrapper.eq("park_id",parkId);
+        wrapper.ge("end_time",date);
+        wrapper.le("end_time",DateUtils.getTomoZeroTime(date));
+        return parkRecordMapper.selectPage(page,wrapper);
     }
 
     @Override
-    public Double getAreaRecordsCostSum(Long areaId) {
+    public Double getAreaRecordsCostSum(Long areaId, Date dayTime) {
         QueryWrapper<ParkRecordEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("area_id",areaId);
         wrapper.select("ifnull(sum(cost),0) as cost");
-        wrapper.ge("end_time", DateUtils.getZeroTime());
+        wrapper.ge("end_time", DateUtils.getZeroTime(dayTime));
+        wrapper.le("end_time",DateUtils.getTomoZeroTime(dayTime));
+        ParkRecordEntity parkRecordEntity = parkRecordMapper.selectOne(wrapper);
+        return parkRecordEntity.getCost();
+    }
+
+    @Override
+    public Double getParkRecordsCostSum(Long parkId, Date dayTime) {
+        QueryWrapper<ParkRecordEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("park_id",parkId);
+        wrapper.select("ifnull(sum(cost),0) as cost");
+        wrapper.ge("end_time", DateUtils.getZeroTime(dayTime));
+        wrapper.le("end_time",DateUtils.getTomoZeroTime(dayTime));
         ParkRecordEntity parkRecordEntity = parkRecordMapper.selectOne(wrapper);
         return parkRecordEntity.getCost();
     }

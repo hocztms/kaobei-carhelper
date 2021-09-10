@@ -24,4 +24,21 @@ public class RestResult {
         ((Map) this.data).put(key, data);
     }
 
+    @SuppressWarnings("unchecked")
+    public void putData(Object data) {
+        if (this.data == null) {
+            this.data = new HashMap<String, Object>();
+        }
+        ((Map) this.data).put("data", data);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void putTotal(Object total) {
+        if (this.data == null) {
+            this.data = new HashMap<String, Object>();
+        }
+        ((Map) this.data).put("total", total);
+    }
+
+
 }

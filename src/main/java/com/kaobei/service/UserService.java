@@ -29,4 +29,12 @@ public interface UserService {
     RestResult setPlate(SetPlateVo setPlateVo, String openId);
 
     RestResult getPlate(String account);
+    RestResult setPlate(SetPlateVo setPlateVo, String openId);
+
+
+    /*
+
+    停车接口
+     */
+    RestResult userParkCar(Long parkId,String openId);
 }

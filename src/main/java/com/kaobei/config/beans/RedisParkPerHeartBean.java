@@ -20,11 +20,22 @@ public class RedisParkPerHeartBean implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        List<ParkEntity> initializationParkList = parkService.getInitializationParkList();
 
-        for (ParkEntity parkEntity:initializationParkList){
-            redisGeoUtils.geoAddPark(parkEntity.getLng(),parkEntity.getLat(),parkEntity.getParkId());
-        }
+        redisGeoUtils.flushRedisGeo();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<ParkEntity> initializationParkList = parkService.getInitializationParkList();
+
+                for (ParkEntity parkEntity:initializationParkList){
+                    redisGeoUtils.geoAddPark(parkEntity.getLng(),parkEntity.getLat(),parkEntity.getParkId());
+                }
+            }
+        });
+
+
+        thread.start();
 
     }
 }

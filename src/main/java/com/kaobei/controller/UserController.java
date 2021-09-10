@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -62,5 +59,16 @@ public class UserController {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
         System.out.println("123"+account);
         return ResultUtils.success(parkRecordService.getUserIsParkByOpenId(account));
+    }
+
+
+    /*
+    用户停车接口
+     */
+    @GetMapping( "/grabPark")
+    public RestResult grabPark(long parkId,HttpServletRequest request) {
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        return userService.userParkCar(parkId, account);
+
     }
 }

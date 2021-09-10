@@ -1,24 +1,19 @@
 package com.kaobei;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.kaobei.dto.ParkDto;
-import com.kaobei.entity.AdminEntity;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kaobei.entity.ParkEntity;
-import com.kaobei.entity.ParkRecordEntity;
-import com.kaobei.entity.UserEntity;
 import com.kaobei.mapper.ParkMapper;
 import com.kaobei.service.AdminService;
 import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
 import com.kaobei.service.UserService;
+import com.kaobei.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 @SpringBootTest
 class KaobeiKaobeiCarhelperApplicationTests {
@@ -45,8 +40,8 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        List<ParkDto> dto = parkMapper.findParkDtoByKeyword("福大",new Page(1,2));
 //        System.out.println(dto.toString());
 
-        Double areaRecordsCostSum = parkRecordService.getAreaRecordsCostSum(1L);
-        System.out.println(areaRecordsCostSum.doubleValue());
+//        Double areaRecordsCostSum = parkRecordService.getAreaRecordsCostSum(1L, );
+//        System.out.println(areaRecordsCostSum.doubleValue());
 
 
 //        Calendar calendar = Calendar.getInstance();
@@ -56,6 +51,15 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        calendar.set(Calendar.SECOND, 0);
 //        Date zero = calendar.getTime();
 //        System.out.println(zero.toString());
+
+        Date zeroTime = DateUtils.getTomoZeroTime(new Date());
+        System.out.println(zeroTime.toString());
+//
+//        QueryWrapper<ParkEntity> wrapper = new QueryWrapper<>();
+//        wrapper.eq("area_id",1);
+//        wrapper.select("limit 1");
+//        ParkEntity parkEntity = parkMapper.selectOne(wrapper);
+//        System.out.println(parkEntity.toString());
     }
 
 }
