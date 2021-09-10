@@ -27,4 +27,6 @@ public interface UserService {
     void setInitRole(UserRoleEntity user);
 
     RestResult setPlate(SetPlateVo setPlateVo, String openId);
+
+    RestResult getPlate(String account);
 }

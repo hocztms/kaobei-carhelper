@@ -1,6 +1,7 @@
 package com.kaobei.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.kaobei.dto.ParkRecoedAbleDto;
 import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.entity.ParkRecordEntity;
 
@@ -18,7 +19,7 @@ public interface ParkRecordService {
     /*
     获取用户未完成停车记录 如果没有允许停车 有则 获取到停车相关信息
      */
-    ParkRecordEntity getUserIsParkByOpenId(String openId);
+    ParkRecoedAbleDto getUserIsParkByOpenId(String openId);
 
 
     List<ParkRecordDto> getAreaRecordsByPage(Long areaId, IPage page);

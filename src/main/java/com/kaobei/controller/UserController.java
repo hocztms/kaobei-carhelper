@@ -2,6 +2,7 @@ package com.kaobei.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.RestResult;
+import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
 import com.kaobei.service.UserService;
 import com.kaobei.utils.JwtTokenUtils;
@@ -32,6 +33,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private ParkRecordService parkRecordService;
 
     @PostMapping( "/getNearPark")
     public RestResult getNearPark(@Validated @RequestBody GetNearParkVo getNearParkVo){
@@ -48,5 +51,16 @@ public class UserController {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
         //这边要验证
         return ResultUtils.success(userService.setPlate(setPlateVo,account));
+    }
+    @PostMapping( "/getPlate")
+    public RestResult getPlate(HttpServletRequest request){
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        return ResultUtils.success(userService.getPlate(account));
+    }
+    @PostMapping( "/verifyPark")
+    public RestResult verifyPark(HttpServletRequest request){
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        System.out.println("123"+account);
+        return ResultUtils.success(parkRecordService.getUserIsParkByOpenId(account));
     }
 }
