@@ -29,8 +29,6 @@ public interface UserService {
     RestResult setPlate(SetPlateVo setPlateVo, String openId);
 
     RestResult getPlate(String account);
-    RestResult setPlate(SetPlateVo setPlateVo, String openId);
-
 
     /*
 
