@@ -3,6 +3,9 @@ package com.kaobei.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.commons.Role;
+import com.kaobei.dto.AdminDto;
+import com.kaobei.dto.ParkAmountDto;
+import com.kaobei.dto.ParkDto;
 import com.kaobei.entity.AdminEntity;
 import com.kaobei.entity.AdminRoleEntity;
 import com.kaobei.entity.ParkEntity;
@@ -10,6 +13,7 @@ import com.kaobei.service.AdminService;
 import com.kaobei.service.AreaAdminService;
 import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
+import com.kaobei.utils.DtoEntityUtils;
 import com.kaobei.utils.RedisGeoUtils;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.ParkAdminVo;
@@ -18,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -56,6 +62,7 @@ public class AreaAdminServiceImpl implements AreaAdminService {
             ParkEntity park = parkService.insertPark(parkEntity);
 
             redisGeoUtils.geoAddPark(park.getLng(),park.getLat(),park.getParkId());
+
             return ResultUtils.success(park.getParkId());
         }catch (Exception e){
             e.printStackTrace();
@@ -63,19 +70,6 @@ public class AreaAdminServiceImpl implements AreaAdminService {
         }
     }
 
-    @Override
-    public RestResult areaAdminGetAreaParkPage(Long page, Long size, String username) {
-        try {
-            AdminEntity adminByUsername = adminService.findAdminByUsername(username);
-
-            List<ParkEntity> areaParkPage = parkService.findAreaParkPage(adminByUsername.getAreaId(), page, size);
-
-            return ResultUtils.success(areaParkPage);
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultUtils.systemError();
-        }
-    }
 
     @Override
     public RestResult areaAdminCreateParkAdmin(ParkAdminVo parkAdminVo, String username) {
@@ -86,10 +80,12 @@ public class AreaAdminServiceImpl implements AreaAdminService {
                     .password(passwordEncoder.encode(parkAdminVo.getPassword()))
                     .areaId(adminEntity.getAreaId())
                     .parkId(parkAdminVo.getParkId())
+                    .isParkAdmin(1)
+                    .isAreaAdmin(0)
                     .status(1)
                     .build();
 
-            adminService.insertAdmin(adminEntity);
+            adminService.insertAdmin(admin);
 
             adminService.insertAdminRole(new AdminRoleEntity(admin.getUsername(), Role.PARK_ADMIN));
 
@@ -105,7 +101,56 @@ public class AreaAdminServiceImpl implements AreaAdminService {
         try {
             AdminEntity adminEntity = adminService.findAdminByUsername(username);
 
-            return ResultUtils.success(parkRecordService);
+            IPage areaParkPage = parkService.findAreaParkPage(adminEntity.getAreaId(), iPage);
+            RestResult restResult = ResultUtils.success();
+            restResult.putData(DtoEntityUtils.parseToArray(areaParkPage.getRecords(), ParkDto.class));
+            restResult.putTotal(areaParkPage.getTotal());
+            return restResult;
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult areaAdminGetParkAdminList(Long parkId, String username) {
+        try {
+            ParkEntity parkById = parkService.findParkById(parkId);
+            AdminEntity adminEntity = adminService.findAdminByUsername(username);
+
+            if (adminEntity.getAreaId().intValue()!=parkById.getAreaId().intValue()){
+                return ResultUtils.error("无权限");
+            }
+
+            List<AdminDto> parkAdminList = adminService.findParkAdminList(parkId);
+            return ResultUtils.success(parkAdminList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult areaAdminGetParkDaysAmount(List<Date> dates, Long parkId, String username) {
+        try {
+            ParkEntity parkEntity = parkService.findParkById(parkId);
+            AdminEntity adminEntity = adminService.findAdminByUsername(username);
+
+            if (parkEntity.getAreaId().intValue()!=adminEntity.getAreaId().intValue()){
+                return ResultUtils.error("无权限");
+            }
+
+
+            List<ParkAmountDto> parkAmountDtos = new ArrayList<>();
+
+            for (Date date:dates){
+                Double parkRecordsCostSum = parkRecordService.getParkRecordsCostSum(parkId, date);
+                parkAmountDtos.add(new ParkAmountDto(parkId,parkRecordsCostSum,date));
+            }
+
+
+
+            return ResultUtils.success(parkAmountDtos);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

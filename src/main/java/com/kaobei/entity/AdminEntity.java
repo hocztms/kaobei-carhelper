@@ -1,5 +1,6 @@
 package com.kaobei.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,10 @@ public class AdminEntity {
     private Long areaId;
     private Long parkId;
     private Integer status;
+
+    @TableField(value = "is_area_admin")
+    private Integer isAreaAdmin;
+
+    @TableField(value = "is_park_admin")
+    private Integer isParkAdmin;
 }

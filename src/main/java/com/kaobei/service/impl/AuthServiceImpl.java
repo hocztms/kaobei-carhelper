@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
         if (redisService.userLogoutByServer(loginUser.getUsername()) == 0) {
             return null;
         }
-
+        int i = 1/0;
         result.put("token", jwtTokenUtils.generateToken(loginUser, "user"));
         return result;
     }

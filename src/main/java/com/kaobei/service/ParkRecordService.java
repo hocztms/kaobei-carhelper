@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.entity.ParkRecordEntity;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ParkRecordService {
@@ -21,11 +22,15 @@ public interface ParkRecordService {
     ParkRecordEntity getUserIsParkByOpenId(String openId);
 
 
-    List<ParkRecordDto> getAreaRecordsByPage(Long areaId, IPage page);
+    List<ParkRecordDto> getAreaDayRecordsByPage(Long areaId, IPage page, Date date);
 
-    List<ParkRecordDto> getParkRecordsByPage(Long parkId,IPage page);
+    IPage getParkDateRecordsByPage(Long parkId,Date date,IPage page);
 
 
-    Double getAreaRecordsCostSum(Long areaId);
+
+
+    Double getAreaRecordsCostSum(Long areaId,Date dayTime);
+
+    Double getParkRecordsCostSum(Long parkId,Date dayTime);
 
 }

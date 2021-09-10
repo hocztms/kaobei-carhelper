@@ -8,6 +8,7 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -20,14 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@EnableTransactionManagement
-
 @Slf4j
 public class TransactionConfiguration {
 
 
     //配置事务
-    private static final String TransactionPointcut = "execution (* com.hocztms.service.*.*(..))";
+    private static final String TransactionPointcut = "execution(* com.kaobei.service.*.*(..))";
 
 
     /*
@@ -72,14 +71,14 @@ public class TransactionConfiguration {
         source.addTransactionalMethod("insert*", txAttrRequired);
         source.addTransactionalMethod("delete*", txAttrRequired);
         source.addTransactionalMethod("update*", txAttrRequired);
-        source.addTransactionalMethod("admin*", txAttrRequired);
-        source.addTransactionalMethod("superAdmin*", txAttrRequired);
-        source.addTransactionalMethod("collegeAdmin*", txAttrRequired);
         source.addTransactionalMethod("set*", txAttrRequired);
-        source.addTransactionalMethod("user*", txAttrRequired);
-        source.addTransactionalMethod("auth*", txAttrRequired);
-        source.addTransactionalMethod("student*", txAttrRequired);
         source.addTransactionalMethod("send*", txAttrRequired);
+        source.addTransactionalMethod("user*", txAttrRequired);
+        source.addTransactionalMethod("admin*", txAttrRequired);
+        source.addTransactionalMethod("auth*", txAttrRequired);
+        source.addTransactionalMethod("park*", txAttrRequired);
+        source.addTransactionalMethod("boss*", txAttrRequired);
+        source.addTransactionalMethod("area*", txAttrRequired);
 
         //设置只读事务
         source.addTransactionalMethod("get*", txAttrRequiredReadOnly);
@@ -95,6 +94,7 @@ public class TransactionConfiguration {
      */
     @Bean
     public Advisor txAdviceAdvisor() {
+        log.info("txAdviceAdvisor 执行了");
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
         pointcut.setExpression(TransactionPointcut);
         return new DefaultPointcutAdvisor(pointcut, txAdvice());

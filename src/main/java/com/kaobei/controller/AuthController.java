@@ -1,5 +1,6 @@
 package com.kaobei.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.AuthService;
@@ -14,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RequestMapping("/auth")
 @PreAuthorize("permitAll()")
@@ -32,11 +36,11 @@ public class AuthController {
     wx小程序登入接口
      */
     @PostMapping("/userWxLogin")
-    public RestResult wxLogin(@RequestBody String json){
-        String code ;
+    public RestResult wxLogin(@RequestBody String json) {
+        String code;
         try {
             code = (String) JSONObject.parseObject(json).get("code");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultUtils.error("数据格式错误");
         }
@@ -48,7 +52,7 @@ public class AuthController {
     后台管理员登入接口
      */
     @PostMapping("/adminLogin")
-    public RestResult adminLogin(@Validated  @RequestBody AdminLoginVo adminLoginVo){
+    public RestResult adminLogin(@Validated @RequestBody AdminLoginVo adminLoginVo) {
         return authService.adminLogin(adminLoginVo);
     }
 
@@ -56,11 +60,12 @@ public class AuthController {
     获取token 信息示例
      */
     @GetMapping("/testToken")
-    public void getTokenTest(HttpServletRequest request){
+    public void getTokenTest(HttpServletRequest request) {
         //不同权限方法下 获取的是openId 或者管理员用户名
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-        log.info("当前登入用户为:{}" ,account);
+        log.info("当前登入用户为:{}", account);
         String test_account = authUtils.getContextUserDetails().getUsername();
-        log.info("当前登入用户为:{}" ,test_account);
+        log.info("当前登入用户为:{}", test_account);
     }
 }
+

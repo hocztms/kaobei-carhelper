@@ -3,7 +3,8 @@ package com.kaobei.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.commons.Role;
-import com.kaobei.dto.ParkRecordDto;
+import com.kaobei.dto.AreaAmountDto;
+import com.kaobei.dto.AdminDto;
 import com.kaobei.entity.AdminEntity;
 import com.kaobei.entity.AdminRoleEntity;
 import com.kaobei.entity.AreaEntity;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,6 +33,8 @@ public class BossAdminServiceImpl implements BossAdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
     @Autowired
     private ParkRecordService parkRecordService;
 
@@ -58,6 +63,8 @@ public class BossAdminServiceImpl implements BossAdminService {
                     .password(passwordEncoder.encode(adminVo.getPassword()))
                     .status(1)
                     .parkId(null)
+                    .isAreaAdmin(1)
+                    .isParkAdmin(0)
                     .build();
 
             adminService.insertAdmin(adminEntity);
@@ -72,7 +79,11 @@ public class BossAdminServiceImpl implements BossAdminService {
     @Override
     public RestResult bossGetAreaPage(IPage iPage) {
         try {
-            return ResultUtils.success(areaService.findAreaPage(iPage));
+            IPage areaPage = areaService.findAreaPage(iPage);
+            RestResult restResult = ResultUtils.success();
+            restResult.putData(areaPage.getRecords());
+            restResult.putTotal(areaPage.getTotal());
+            return restResult;
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();
@@ -80,15 +91,28 @@ public class BossAdminServiceImpl implements BossAdminService {
     }
 
     @Override
-    public RestResult bossGetAreaRecordPage(Long areaId, IPage iPage) {
+    public RestResult bossGetAreaAdminList(Long areaId) {
         try {
-            Double sum = parkRecordService.getAreaRecordsCostSum(areaId);
-            List<ParkRecordDto> areaRecordsByPage = parkRecordService.getAreaRecordsByPage(areaId, iPage);
-            RestResult restResult = new RestResult();
-            restResult.put("sum",sum);
-            restResult.put("records",areaRecordsByPage);
+            List<AdminDto> areaAdminList = adminService.findAreaAdminList(areaId);
 
-            return restResult;
+            return ResultUtils.success(areaAdminList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+
+    @Override
+    public RestResult bossGetAreaDaysCostAmount(List<Date> dates, Long areaId) {
+        try {
+            List<AreaAmountDto> areaAmountDtos = new ArrayList<>();
+            for (Date date:dates){
+                Double amount = parkRecordService.getAreaRecordsCostSum(areaId, date);
+                areaAmountDtos.add(new AreaAmountDto(areaId,amount,date));
+            }
+
+            return ResultUtils.success(areaAmountDtos);
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();
