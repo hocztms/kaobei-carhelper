@@ -48,7 +48,7 @@ public class RedisGeoUtils {
 
 
     public void flushRedisGeo(){
-        redisTemplate.delete(GEO_KEY);
+        redisTemplate.delete(GEO_KEY+"*");
     }
 
 

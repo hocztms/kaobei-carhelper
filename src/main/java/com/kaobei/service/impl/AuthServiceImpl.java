@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 @Slf4j
@@ -43,6 +47,20 @@ public class AuthServiceImpl implements AuthService {
 
         MyUserDetails loginUser = (MyUserDetails) authentication.getPrincipal();
         RestResult result = new RestResult(1, "登入成功", null);
+
+        Collection<? extends GrantedAuthority> authorities = loginUser.getAuthorities();
+
+        if (authorities.contains(new SimpleGrantedAuthority("boss"))){
+            result.setCode(1);
+        }
+
+        if (authorities.contains(new SimpleGrantedAuthority("areaAdmin"))){
+            result.setCode(2);
+        }
+
+        if (authorities.contains(new SimpleGrantedAuthority("parkAdmin"))){
+            result.setCode(3);
+        }
 
         log.info("管理员:{} 已经登入。。。本次权限为:{}", loginUser.getUsername(), loginUser.getAuthorities().toString());
 
@@ -77,7 +95,6 @@ public class AuthServiceImpl implements AuthService {
         if (redisService.userLogoutByServer(loginUser.getUsername()) == 0) {
             return null;
         }
-        int i = 1/0;
         result.put("token", jwtTokenUtils.generateToken(loginUser, "user"));
         return result;
     }
