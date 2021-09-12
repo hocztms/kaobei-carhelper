@@ -7,10 +7,7 @@ import com.kaobei.service.ParkService;
 import com.kaobei.service.UserService;
 import com.kaobei.utils.JwtTokenUtils;
 import com.kaobei.utils.ResultUtils;
-import com.kaobei.vo.GetNearParkVo;
-import com.kaobei.vo.GetParkVo;
-import com.kaobei.vo.GetPlateVo;
-import com.kaobei.vo.SetPlateVo;
+import com.kaobei.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RequestMapping("/user")
@@ -57,7 +55,6 @@ public class UserController {
     @PostMapping( "/verifyPark")
     public RestResult verifyPark(HttpServletRequest request){
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-        System.out.println("123"+account);
         return ResultUtils.success(parkRecordService.getUserIsParkByOpenId(account));
     }
 

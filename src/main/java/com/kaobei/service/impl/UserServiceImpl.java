@@ -22,7 +22,6 @@ import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.DownLodeVo;
 import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
-import org.springframework.beans.BeanUtils;
 import com.kaobei.vo.SetPlateVo;
 import io.lettuce.core.RedisClient;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -227,12 +227,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RestResult getPlate(String account) {
+    public RestResult getPlate(String account){
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("open_id", account);
-        UserDto userDto=new UserDto();
-        BeanUtils.copyProperties(userMapper.selectById(wrapper),userDto);
-        return ResultUtils.success(userDto);
+        //UserDto userDto=new UserDto();
+        //BeanUtils.copyProperties(userMapper.selectById(wrapper),userDto);
+        return ResultUtils.success(userMapper.selectById(wrapper));
     }
 
     public RestResult getPlateByPicture(GetPlateVo getPlateVo) {

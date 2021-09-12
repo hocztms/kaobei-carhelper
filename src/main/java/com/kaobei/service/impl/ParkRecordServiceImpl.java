@@ -8,11 +8,11 @@ import com.kaobei.entity.ParkRecordEntity;
 import com.kaobei.mapper.ParkRecordMapper;
 import com.kaobei.service.ParkRecordService;
 import com.kaobei.utils.DateUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Watchable;
 import java.util.Date;
 import java.util.List;
@@ -42,14 +42,14 @@ public class ParkRecordServiceImpl implements ParkRecordService {
     }
 
     @Override
-    public ParkRecoedAbleDto getUserIsParkByOpenId(String openId) {
+    public ParkRecordEntity getUserIsParkByOpenId(String openId){
         QueryWrapper<ParkRecordEntity> wrapper = new QueryWrapper<>();
 
         wrapper.eq("open_id",openId);
         wrapper.eq("status",0);
-        ParkRecoedAbleDto parkRecoedAbleDto= new ParkRecoedAbleDto();
-        BeanUtils.copyProperties(parkRecordMapper.selectOne(wrapper),parkRecoedAbleDto);
-        return parkRecoedAbleDto;
+        //ParkRecoedAbleDto parkRecoedAbleDto= new ParkRecoedAbleDto();
+        //BeanUtils.copyProperties(parkRecordMapper.selectOne(wrapper),parkRecoedAbleDto);
+        return parkRecordMapper.selectOne(wrapper);
     }
 
     @Override

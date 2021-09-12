@@ -8,6 +8,7 @@ import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
