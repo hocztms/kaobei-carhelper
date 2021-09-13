@@ -5,6 +5,7 @@ import com.kaobei.dto.ParkRecoedAbleDto;
 import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.entity.ParkRecordEntity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public interface ParkRecordService {
     /*
     获取用户未完成停车记录 如果没有允许停车 有则 获取到停车相关信息
      */
-    ParkRecoedAbleDto getUserIsParkByOpenId(String openId);
+    ParkRecordEntity getUserIsParkByOpenId(String openId);
 
 
     List<ParkRecordDto> getAreaDayRecordsByPage(Long areaId, IPage page, Date date);
