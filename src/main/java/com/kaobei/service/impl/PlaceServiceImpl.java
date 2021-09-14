@@ -2,6 +2,7 @@ package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.entity.ParkPlaceEntity;
 import com.kaobei.mapper.PlaceMapper;
@@ -39,6 +40,11 @@ public class PlaceServiceImpl implements PlaceService {
         if (i==0){
             throw new RuntimeException("更新失败");
         }
+    }
+
+    @Override
+    public ParkPlaceEntity findParkById(Long recordId) {
+        return placeMapper.selectById(recordId);
     }
 
     @Override

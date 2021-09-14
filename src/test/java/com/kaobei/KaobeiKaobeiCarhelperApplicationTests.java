@@ -8,12 +8,14 @@ import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
 import com.kaobei.service.UserService;
 import com.kaobei.utils.DateUtils;
+import com.kaobei.utils.RedisGeoUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
+import java.util.List;
 
 @SpringBootTest
 class KaobeiKaobeiCarhelperApplicationTests {
@@ -30,6 +32,8 @@ class KaobeiKaobeiCarhelperApplicationTests {
     private ParkMapper parkMapper;
     @Autowired
     private ParkRecordService parkRecordService;
+    @Autowired
+    private RedisGeoUtils  redisGeoUtils;
 
     @Test
     void contextLoads() {
@@ -52,14 +56,18 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        Date zero = calendar.getTime();
 //        System.out.println(zero.toString());
 
-        Date zeroTime = DateUtils.getTomoZeroTime(new Date());
-        System.out.println(zeroTime.toString());
+//        Date zeroTime = DateUtils.getTomoZeroTime(new Date());
+//        System.out.println(zeroTime.toString());
 //
 //        QueryWrapper<ParkEntity> wrapper = new QueryWrapper<>();
 //        wrapper.eq("area_id",1);
 //        wrapper.select("limit 1");
 //        ParkEntity parkEntity = parkMapper.selectOne(wrapper);
 //        System.out.println(parkEntity.toString());
+
+        List<Long> longList = redisGeoUtils.geoGetParkLIdListByNear(119.01, 26.01, 1000.00, 10);
+
+        System.out.println(longList.toString());
     }
 
 }

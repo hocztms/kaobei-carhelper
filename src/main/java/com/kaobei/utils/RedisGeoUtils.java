@@ -52,4 +52,9 @@ public class RedisGeoUtils {
     }
 
 
+    public void flushRedisAllKeys(){
+        redisTemplate.delete("*");
+    }
+
+
 }

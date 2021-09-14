@@ -21,7 +21,7 @@ public class RedisParkPerHeartBean implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        redisGeoUtils.flushRedisGeo();
+        redisGeoUtils.flushRedisAllKeys();
 
         Thread thread = new Thread(new Runnable() {
             @Override

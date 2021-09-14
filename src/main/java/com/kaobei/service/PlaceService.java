@@ -10,6 +10,8 @@ public interface PlaceService {
 
     void updateParkPlaceById(ParkPlaceEntity parkPlaceEntity);
 
+    ParkPlaceEntity findParkById(Long  recordId);
+
     void deleteParkPlaceById(Long placeId);
 
     ParkPlaceEntity userGrabParkPlaceByParkId(Long parkId);

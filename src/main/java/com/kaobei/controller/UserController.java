@@ -60,12 +60,18 @@ public class UserController {
 
 
     /*
-    用户停车接口
+    用户抢车位接口
      */
     @GetMapping( "/grabPark")
     public RestResult grabPark(long parkId,HttpServletRequest request) {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
         return userService.userParkCar(parkId, account);
-
     }
+
+
+//    @PostMapping( "/parking")
+////    public RestResult parking(@Vali@RequestBody String json,HttpServletRequest request) {
+//        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+//        return userService.userParkCar(parkId, account);
+//    }
 }

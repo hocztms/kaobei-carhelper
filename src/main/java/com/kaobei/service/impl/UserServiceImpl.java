@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,6 +57,8 @@ public class UserServiceImpl implements UserService {
     private PlaceService placeService;
     @Resource
     private ParkService parkService;
+    @Resource
+    private RedisTemplate<Object,Object> redisTemplate;
 
 
     @Override
@@ -179,6 +182,8 @@ public class UserServiceImpl implements UserService {
                 return ResultUtils.error("停车场已满");
             }
 
+
+            //redis 分布式事务锁
             RLock rLock = redissonClient.getFairLock(parkId.toString());
 
             //设置基础值为非
@@ -204,12 +209,47 @@ public class UserServiceImpl implements UserService {
                     parkPlaceEntity.setIsOccupied(1);
                     placeService.updateParkPlaceById(parkPlaceEntity);
                     //创建记录
-                    parkRecordService.insertRecord(new ParkRecordEntity(0L,parkEntity.getAreaId(),parkId,parkPlaceEntity.getPlaceId(),userEntity.getOpenId(),new Date(),null,null,0,0));
+                    ParkRecordEntity parkRecordEntity = parkRecordService.insertRecord(new ParkRecordEntity(0L, parkEntity.getAreaId(), parkId, parkPlaceEntity.getPlaceId(), userEntity.getOpenId(), null, null, null, 0, 0));
 
                     //修改外部可停数量
                     parkEntity.setPlaceNum(parkEntity.getPlaceNum() -1);
                     parkService.updateParkById(parkEntity);
 
+
+                    redisTemplate.opsForValue().set("delay::"+parkRecordEntity.getRecordId(),parkRecordEntity,15,TimeUnit.MINUTES);
+
+
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Long recordId = parkRecordEntity.getRecordId();
+
+                            try {
+                                Thread.sleep(60*1000*10);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            ParkRecordEntity record = (ParkRecordEntity)redisTemplate.opsForValue().get("delay::" + recordId);
+
+                            if (record==null) {
+                                return;
+                            }
+
+                            log.info("用户 :{} 未停车 取消资格",record.getOpenId() );
+                            ParkEntity parkById = parkService.findParkById(record.getParkId());
+                            parkById.setPlaceNum(parkById.getPlaceNum() + 1);
+                            parkService.updateParkById(parkEntity);
+
+
+                            parkRecordService.deleteRecord(recordId);
+
+                            ParkPlaceEntity place = placeService.findParkById(record.getPlaceId());
+                            place.setIsOccupied(0);
+
+                            placeService.updateParkPlaceById(place);
+                        }
+                    });
+                    thread.start();
                     return ResultUtils.success(DtoEntityUtils.parseToObject(parkPlaceEntity, PlaceDto.class));
                 }catch (Exception e){
                     e.printStackTrace();
