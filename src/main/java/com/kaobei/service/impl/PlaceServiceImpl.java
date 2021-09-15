@@ -43,7 +43,7 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public ParkPlaceEntity findParkById(Long recordId) {
+    public ParkPlaceEntity findPlaceById(Long recordId) {
         return placeMapper.selectById(recordId);
     }
 

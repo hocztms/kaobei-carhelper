@@ -1,6 +1,7 @@
 package com.kaobei.utils;
 
 
+import com.kaobei.commons.Pos;
 import com.kaobei.entity.ParkEntity;
 import io.lettuce.core.RedisClient;
 import org.redisson.api.*;
@@ -21,6 +22,9 @@ public class RedisGeoUtils {
     private RedisTemplate<Object,Object> redisTemplate;
 
     public static final String GEO_KEY = "geoKey";
+
+    public static final String DIS_KEY = "disKey";
+
 
 
     public boolean geoRmPark(Long parkId){
@@ -56,5 +60,15 @@ public class RedisGeoUtils {
         redisTemplate.delete("*");
     }
 
+
+
+    public double getDistance(Pos pos1,Pos pos2){
+        RGeo<Object> geo = redissonClient.getGeo(DIS_KEY);
+
+        geo.add(pos1.getLng(),pos1.getLat(),"pos1");
+        geo.add(pos2.getLng(),pos2.getLat(),"pos2");
+
+        return geo.dist("pos1","pos2",GeoUnit.METERS);
+    }
 
 }

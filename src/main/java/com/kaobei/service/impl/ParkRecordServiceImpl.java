@@ -2,22 +2,16 @@ package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.kaobei.dto.ParkRecoedAbleDto;
 import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.entity.ParkRecordEntity;
 import com.kaobei.mapper.ParkRecordMapper;
 import com.kaobei.service.ParkRecordService;
 import com.kaobei.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Watchable;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class ParkRecordServiceImpl implements ParkRecordService {
@@ -37,8 +31,8 @@ public class ParkRecordServiceImpl implements ParkRecordService {
     }
 
     @Override
-    public void deleteRecord(Long parkId) {
-        parkRecordMapper.deleteById(parkId);
+    public void deleteRecord(Long recordId) {
+        parkRecordMapper.deleteById(recordId);
     }
 
     @Override

@@ -9,14 +9,11 @@ import com.kaobei.utils.JwtTokenUtils;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 @RequestMapping("/user")
 @PreAuthorize("hasAuthority('user')")
@@ -65,13 +62,23 @@ public class UserController {
     @GetMapping( "/grabPark")
     public RestResult grabPark(long parkId,HttpServletRequest request) {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-        return userService.userParkCar(parkId, account);
+        return userService.userGrabParkPlace(parkId, account);
+    }
+
+    @DeleteMapping("/cancelPark")
+    public RestResult cancelPark(HttpServletRequest request){
+
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        return userService.userCancelPark(account);
     }
 
 
-//    @PostMapping( "/parking")
-////    public RestResult parking(@Vali@RequestBody String json,HttpServletRequest request) {
-//        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-//        return userService.userParkCar(parkId, account);
-//    }
+    @PostMapping( "/getPlaceDis")
+    public RestResult getPlaceDis(@Validated @RequestBody DeviceVo deviceVo, HttpServletRequest request) {
+        System.out.println(deviceVo.toString());
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+
+        return userService.userGetParkPlaceDis(deviceVo,account);
+    }
 }

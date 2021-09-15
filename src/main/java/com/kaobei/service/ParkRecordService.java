@@ -15,7 +15,7 @@ public interface ParkRecordService {
 
     void updateRecord(ParkRecordEntity parkRecordEntity);
 
-    void deleteRecord(Long parkId);
+    void deleteRecord(Long recordId);
 
 
     /*

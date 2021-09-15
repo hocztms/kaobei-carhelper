@@ -3,12 +3,11 @@ package com.kaobei.service;
 import com.kaobei.commons.RestResult;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
-import com.kaobei.vo.DownLodeVo;
+import com.kaobei.vo.DeviceVo;
 import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public interface UserService {
@@ -33,7 +32,13 @@ public interface UserService {
 
     /*
 
-    停车接口
+    用户抢车位方法
      */
-    RestResult userParkCar(Long parkId,String openId);
+    RestResult userGrabParkPlace(Long parkId, String openId);
+
+    RestResult userCancelPark(String openId);
+
+
+    RestResult userGetParkPlaceDis(DeviceVo deviceVo,String openId);
+
 }

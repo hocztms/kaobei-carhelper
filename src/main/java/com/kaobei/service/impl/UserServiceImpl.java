@@ -1,42 +1,36 @@
 package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kaobei.commons.Circle;
+import com.kaobei.commons.Point;
 import com.kaobei.commons.RestResult;
-import com.kaobei.dto.UserDto;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
 import com.kaobei.dto.PlaceDto;
 import com.kaobei.entity.*;
 import com.kaobei.mapper.UserMapper;
 import com.kaobei.mapper.UserRoleMapper;
-import com.kaobei.service.ParkRecordService;
-import com.kaobei.service.ParkService;
-import com.kaobei.service.PlaceService;
-import com.kaobei.service.UserService;
+import com.kaobei.service.*;
 import com.kaobei.util.BaiduUtil.AuthService;
 import com.kaobei.util.BaiduUtil.Base64Util;
 import com.kaobei.util.BaiduUtil.FileUtil;
 import com.kaobei.util.HttpUtil;
 import com.kaobei.utils.DtoEntityUtils;
+import com.kaobei.utils.GeoUtils;
+import com.kaobei.utils.RedisGeoUtils;
 import com.kaobei.utils.ResultUtils;
-import com.kaobei.vo.DownLodeVo;
-import com.kaobei.vo.GetPlateVo;
+import com.kaobei.vo.*;
 import com.kaobei.vo.SetPlateVo;
-import com.kaobei.vo.SetPlateVo;
-import io.lettuce.core.RedisClient;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +53,13 @@ public class UserServiceImpl implements UserService {
     private ParkService parkService;
     @Resource
     private RedisTemplate<Object,Object> redisTemplate;
+    @Resource
+    private DeviceService deviceService;
+    @Resource
+    private RedisGeoUtils redisGeoUtils;
+
+    @Resource
+    private GeoUtils geoUtils;
 
 
     @Override
@@ -167,7 +168,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RestResult userParkCar(Long parkId, String openId) {
+    public RestResult userGrabParkPlace(Long parkId, String openId) {
         try {
             UserEntity userEntity = findUserByOpenId(openId);
 
@@ -243,7 +244,7 @@ public class UserServiceImpl implements UserService {
 
                             parkRecordService.deleteRecord(recordId);
 
-                            ParkPlaceEntity place = placeService.findParkById(record.getPlaceId());
+                            ParkPlaceEntity place = placeService.findPlaceById(record.getPlaceId());
                             place.setIsOccupied(0);
 
                             placeService.updateParkPlaceById(place);
@@ -260,6 +261,66 @@ public class UserServiceImpl implements UserService {
             }
 
             return ResultUtils.error("服务器繁忙");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userCancelPark(String openId) {
+        try {
+            ParkRecordEntity record = parkRecordService.getUserIsParkByOpenId(openId);
+            if (record ==null){
+                return ResultUtils.error("请勿重复操作");
+            }
+
+            redisTemplate.delete("delay::" + record.getRecordId());
+
+            ParkEntity parkById = parkService.findParkById(record.getParkId());
+            parkById.setPlaceNum(parkById.getPlaceNum() + 1);
+            parkService.updateParkById(parkById);
+
+            ParkPlaceEntity placeById = placeService.findPlaceById(record.getPlaceId());
+            placeById.setIsOccupied(0);
+            placeService.updateParkPlaceById(placeById);
+
+            parkRecordService.deleteRecord(record.getRecordId());
+
+
+            return ResultUtils.success();
+        }catch (Exception e){
+
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userGetParkPlaceDis(DeviceVo deviceVo, String openId) {
+        try {
+            ParkRecordEntity record = parkRecordService.getUserIsParkByOpenId(openId);
+
+
+            if (record==null){
+                return ResultUtils.error("错误操作");
+            }
+
+
+            ParkPlaceEntity placeById = placeService.findPlaceById(record.getPlaceId());
+
+
+            Point point = GeoUtils.posParseToPoint(placeById.getLng(),placeById.getLat());
+            Circle c1 = new Circle();
+            Circle c2 = new Circle();
+            Circle c3 = new Circle();
+            List<DeviceVo.Device> list = deviceVo.getList();
+            for (DeviceVo.Device device:list){
+                DeviceEntity parkDevice = deviceService.findDeviceByWordArea(record.getParkId(), device.getDeviceNumber());
+//                c1.setCircle(GeoUtils.posParseToPoint(parkDevice.getLng(),parkDevice.getLat(),device.getDistance()));
+            }
+
+            return null;
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

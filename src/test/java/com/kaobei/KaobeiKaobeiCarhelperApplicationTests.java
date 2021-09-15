@@ -1,20 +1,16 @@
 package com.kaobei;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.kaobei.entity.ParkEntity;
+import com.kaobei.commons.Pos;
+import com.kaobei.entity.DeviceEntity;
 import com.kaobei.mapper.ParkMapper;
-import com.kaobei.service.AdminService;
-import com.kaobei.service.ParkRecordService;
-import com.kaobei.service.ParkService;
-import com.kaobei.service.UserService;
-import com.kaobei.utils.DateUtils;
+import com.kaobei.service.*;
+import com.kaobei.utils.GeoUtils;
 import com.kaobei.utils.RedisGeoUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -34,6 +30,13 @@ class KaobeiKaobeiCarhelperApplicationTests {
     private ParkRecordService parkRecordService;
     @Autowired
     private RedisGeoUtils  redisGeoUtils;
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
+    private GeoUtils geoUtils;
+
 
     @Test
     void contextLoads() {
@@ -64,10 +67,20 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        wrapper.select("limit 1");
 //        ParkEntity parkEntity = parkMapper.selectOne(wrapper);
 //        System.out.println(parkEntity.toString());
+//
+//        List<Long> longList = redisGeoUtils.geoGetParkLIdListByNear(119.01, 26.01, 1000.00, 10);
+//
+//        System.out.println(longList.toString());
 
-        List<Long> longList = redisGeoUtils.geoGetParkLIdListByNear(119.01, 26.01, 1000.00, 10);
+//        deviceService.insertDevice(new DeviceEntity(0L,1L,"w",00.00,00.00));
+        double distance = redisGeoUtils.getDistance(new Pos(119.19351, 26.05345), new Pos(119.19159, 26.05231));
+        System.out.println(distance);
 
-        System.out.println(longList.toString());
+
+        Double distance1 = geoUtils.getDistance(GeoUtils.posParseToPoint(26.05345, 119.19351), GeoUtils.posParseToPoint(26.05231, 119.19159));
+        System.out.println(distance1.toString());
+
+
     }
 
 }
