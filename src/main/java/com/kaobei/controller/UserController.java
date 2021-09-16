@@ -59,10 +59,10 @@ public class UserController {
     /*
     用户抢车位接口
      */
-    @GetMapping( "/grabPark")
-    public RestResult grabPark(long parkId,HttpServletRequest request) {
+    @PostMapping( "/grabPark")
+    public RestResult grabPark(@Validated @RequestBody GrabParkVo grabParkVo,HttpServletRequest request) {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-        return userService.userGrabParkPlace(parkId, account);
+        return userService.userGrabParkPlace(grabParkVo.getParkId(), account);
     }
 
     @DeleteMapping("/cancelPark")

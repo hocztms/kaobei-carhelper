@@ -328,12 +328,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RestResult getPlate(String account){
+    public String getPlate(String account){
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("open_id", account);
-        //UserDto userDto=new UserDto();
-        //BeanUtils.copyProperties(userMapper.selectById(wrapper),userDto);
-        return ResultUtils.success(userMapper.selectById(wrapper));
+        return userMapper.selectOne(wrapper).getCarNumber();
     }
 
     public RestResult getPlateByPicture(GetPlateVo getPlateVo) {
