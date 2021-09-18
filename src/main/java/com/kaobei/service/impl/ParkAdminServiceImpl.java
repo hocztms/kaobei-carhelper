@@ -6,6 +6,7 @@ import com.kaobei.commons.RestResult;
 import com.kaobei.dto.ParkRecordDto;
 import com.kaobei.dto.PlaceDto;
 import com.kaobei.entity.AdminEntity;
+import com.kaobei.entity.ComplaintEntity;
 import com.kaobei.entity.ParkEntity;
 import com.kaobei.entity.ParkPlaceEntity;
 import com.kaobei.service.*;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ParkAdminServiceImpl implements ParkAdminService {
@@ -31,6 +33,8 @@ public class ParkAdminServiceImpl implements ParkAdminService {
     private PlaceService placeService;
     @Autowired
     private ParkRecordService parkRecordService;
+    @Autowired
+    private ComplaintService complaintService;
 
 
     @Override
@@ -143,6 +147,51 @@ public class ParkAdminServiceImpl implements ParkAdminService {
             restResult.putData(DtoEntityUtils.parseToArray(page.getRecords(), ParkRecordDto.class));
             restResult.putTotal(page.getTotal());
             return restResult;
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult parkAdminGetComplaintPage(String username, IPage iPage) {
+        try {
+            AdminEntity adminEntity = adminService.findAdminByUsername(username);
+
+            IPage data = complaintService.findComplaintPageByParkId(adminEntity.getParkId(), iPage);
+
+            RestResult restResult = ResultUtils.success();
+            restResult.putTotal(data.getTotal());
+            restResult.putData(data.getRecords());
+
+
+            return restResult;
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult parkAdminHandleComplaints(List<Long> ids, String username) {
+        try {
+            AdminEntity adminEntity = adminService.findAdminByUsername(username);
+            for (Long id:ids){
+                ComplaintEntity complaintById = complaintService.findComplaintById(id);
+
+                if (complaintById==null||complaintById.getStatus()==1){
+                    continue;
+                }
+
+                if (!complaintById.getParkId().equals(adminEntity.getParkId())){
+                    return ResultUtils.error("无权限");
+                }
+
+                complaintById.setStatus(1);
+                complaintService.updateComplaintById(complaintById);
+            }
+
+            return ResultUtils.success();
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

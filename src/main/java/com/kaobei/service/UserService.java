@@ -1,5 +1,6 @@
 package com.kaobei.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.commons.RestResult;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
@@ -47,4 +48,6 @@ public interface UserService {
     RestResult userEndPark(String openId);
 
     RestResult userFeedBack(ComplaintVo complaintVo, String openId);
+
+    RestResult userGetCommonPark(String openId, IPage iPage);
 }

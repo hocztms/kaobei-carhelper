@@ -1,10 +1,13 @@
 package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.kaobei.commons.Circle;
 import com.kaobei.commons.Point;
 import com.kaobei.commons.RestResult;
 import com.kaobei.dto.AdminDto;
+import com.kaobei.dto.ParkDto;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
 import com.kaobei.dto.PlaceDto;
@@ -22,6 +25,7 @@ import com.kaobei.utils.RedisGeoUtils;
 import com.kaobei.utils.ResultUtils;
 import com.kaobei.vo.*;
 import com.kaobei.vo.SetPlateVo;
+import com.kaobei.webSocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -63,6 +67,10 @@ public class UserServiceImpl implements UserService {
     private ComplaintService complaintService;
     @Resource
     private AdminService adminService;
+    @Resource
+    private WebSocketServer webSocketServer;
+    @Resource
+    private CommonParkService commonParkService;
 
 
     @Override
@@ -443,6 +451,21 @@ public class UserServiceImpl implements UserService {
 
 
             String msg = "您的停车已经完成 共计:" + cost + "元";
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CommonParkEntity userCommonPark = commonParkService.findUserCommonPark(parkEntity.getParkId(), openId);
+                    if (userCommonPark==null){
+                        commonParkService.insertCommonPark(new CommonParkEntity(0L,openId,parkEntity.getParkId(),parkEntity.getParkName(),1L));
+                    }
+                    else {
+                        commonParkService.upCommonParkTime(userCommonPark.getCommonId());
+                    }
+                }
+            });
+
+            thread.start();
             return ResultUtils.success();
         }catch (Exception e){
             e.printStackTrace();
@@ -455,7 +478,7 @@ public class UserServiceImpl implements UserService {
         try {
 
             ComplaintEntity complaint = ComplaintEntity.builder()
-                    .complaint_id(0L)
+                    .complaintId(0L)
                     .content(complaintVo.getContent())
                     .openId(openId)
                     .status(0)
@@ -468,10 +491,35 @@ public class UserServiceImpl implements UserService {
                 @Override
                 public void run() {
                     List<AdminDto> adminEntities = adminService.findParkAdminList(complaint.getParkId());
+                    for (AdminDto adminDto:adminEntities){
+                        webSocketServer.sendInfo(adminDto.getUsername(),new SocketMessage(1,"您有新的反馈消息待处理...").toString());
+                    }
                 }
             });
 
             return ResultUtils.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userGetCommonPark(String openId, IPage iPage) {
+        try {
+            IPage userCommonPark = commonParkService.findUserCommonPark(openId, iPage);
+
+            List<CommonParkEntity> commonParkEntities = userCommonPark.getRecords();
+            List<ParkEntity> parkEntities = new ArrayList<>();
+            for (CommonParkEntity commonParkEntity:commonParkEntities){
+                ParkEntity parkById = parkService.findParkById(commonParkEntity.getParkId());
+                parkEntities.add(parkById);
+            }
+            RestResult restResult = ResultUtils.success();
+            restResult.putTotal(userCommonPark.getTotal());
+            restResult.putData(DtoEntityUtils.parseToArray(parkEntities, ParkDto.class));
+
+            return restResult;
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

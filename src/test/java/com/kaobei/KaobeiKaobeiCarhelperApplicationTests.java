@@ -3,6 +3,7 @@ package com.kaobei;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.Pos;
 import com.kaobei.dto.ParkDto;
+import com.kaobei.entity.ComplaintEntity;
 import com.kaobei.entity.DeviceEntity;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.mapper.ParkMapper;
@@ -37,6 +38,9 @@ class KaobeiKaobeiCarhelperApplicationTests {
 
     @Autowired
     private GeoUtils geoUtils;
+
+    @Autowired
+    private ComplaintService complaintService;
 
 
     @Test
@@ -80,9 +84,11 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //
 //        Double distance1 = geoUtils.getDistance(GeoUtils.posParseToPoint(119.19146, 26.05115), GeoUtils.posParseToPoint(119.19153, 26.05112));
 //        System.out.println(distance1.toString());
-        UserEntity userByOpenId = userService.findUserByOpenId("123456");
-        userByOpenId.setCarNumber("123123123132");
-        userService.updateUserByOpenId(userByOpenId);
+//        UserEntity userByOpenId = userService.findUserByOpenId("123456");
+//        userByOpenId.setCarNumber("123123123132");
+//        userService.updateUserByOpenId(userByOpenId);
+
+        complaintService.insertComplaint(new ComplaintEntity(0L,"123456",0L,"123456",0));
     }
 
 }

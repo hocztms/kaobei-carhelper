@@ -6,6 +6,7 @@ import com.kaobei.vo.ParkVo;
 import com.kaobei.vo.PlaceVo;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ParkAdminService {
 
@@ -18,4 +19,8 @@ public interface ParkAdminService {
     RestResult parkAdminGetParkPlacePage(IPage iPage, String username);
 
     RestResult parkAdminGetDateRecords(Date date,IPage iPage, String username);
+
+    RestResult parkAdminGetComplaintPage(String username,IPage iPage);
+
+    RestResult parkAdminHandleComplaints(List<Long> ids,String username);
 }

@@ -3,7 +3,6 @@ package com.kaobei.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.JsonObject;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.ParkAdminService;
 import com.kaobei.utils.JwtTokenUtils;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.List;
 
 @RequestMapping("/park")
 @PreAuthorize("hasAuthority('parkAdmin')")
@@ -74,6 +74,20 @@ public class ParkAdminController {
         }
 
         return parkAdminService.parkAdminGetDateRecords(date,new Page(page,size),account);
+    }
+
+
+    @GetMapping("/getComplaint")
+    public RestResult getComplaint(long page,long size,HttpServletRequest request){
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+        return parkAdminService.parkAdminGetComplaintPage(account,new Page(page,size));
+    }
+
+    @PutMapping("/handleComplaint")
+    public RestResult handleComplaint(@RequestBody List<Long> ids, HttpServletRequest request){
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+        return parkAdminService.parkAdminHandleComplaints(ids,account);
     }
 
 }

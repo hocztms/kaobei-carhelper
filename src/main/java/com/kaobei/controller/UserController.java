@@ -115,4 +115,16 @@ public class UserController {
 
         return userService.userFeedBack(complaintVo,account);
     }
+
+    /*
+    用户获取常用停车场
+     */
+
+    @GetMapping( "/getCommonPark")
+    public RestResult getCommonPark(long page,
+            long size,HttpServletRequest request) {
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+        return userService.userGetCommonPark(account,new Page(page,size));
+    }
 }

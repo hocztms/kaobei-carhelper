@@ -1,13 +1,12 @@
 package com.kaobei.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kaobei.entity.ComplaintEntity;
 import com.kaobei.mapper.ComplaintMapper;
 import com.kaobei.service.ComplaintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ComplaintServiceImpl implements ComplaintService {
@@ -23,6 +22,11 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
+    public ComplaintEntity findComplaintById(Long complaintId) {
+        return complaintMapper.selectById(complaintId);
+    }
+
+    @Override
     public void updateComplaintById(ComplaintEntity complaintEntity) {
         complaintMapper.updateById(complaintEntity);
     }
@@ -33,9 +37,10 @@ public class ComplaintServiceImpl implements ComplaintService {
     }
 
     @Override
-    public List<ComplaintEntity> findComplaintsByParkId(Long parkId) {
+    public IPage findComplaintPageByParkId(Long parkId, IPage page) {
         QueryWrapper<ComplaintEntity>wrapper = new QueryWrapper<>();
         wrapper.eq("park_id",parkId);
-        return complaintMapper.selectList(wrapper);
+        wrapper.orderByAsc("status");
+        return complaintMapper.selectPage(page,wrapper);
     }
 }
