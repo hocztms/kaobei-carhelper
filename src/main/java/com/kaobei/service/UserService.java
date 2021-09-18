@@ -3,6 +3,7 @@ package com.kaobei.service;
 import com.kaobei.commons.RestResult;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
+import com.kaobei.vo.ComplaintVo;
 import com.kaobei.vo.DeviceVo;
 import com.kaobei.vo.GetPlateVo;
 import com.kaobei.vo.SetPlateVo;
@@ -41,4 +42,9 @@ public interface UserService {
 
     RestResult userGetParkPlaceDis(DeviceVo deviceVo,String openId);
 
+    RestResult userParking(DeviceVo deviceVo,String openId);
+
+    RestResult userEndPark(String openId);
+
+    RestResult userFeedBack(ComplaintVo complaintVo, String openId);
 }

@@ -26,4 +26,7 @@ public class ParkVo {
     private Double lng;
     @NotNull(message = "伟度不能为空")
     private Double lat;
+
+    @NotNull(message = "每小时计费")
+    private Double charge;
 }

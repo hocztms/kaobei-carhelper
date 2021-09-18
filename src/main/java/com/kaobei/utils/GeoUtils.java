@@ -75,7 +75,7 @@ public class GeoUtils {
 
 
         if (!points2.isEmpty()) {
-            Point point = checkPoint(points1, c3);
+            Point point = checkPoint(points2, c3);
             points.add(point);
         }
 
@@ -83,7 +83,7 @@ public class GeoUtils {
 
 
         if (!points3.isEmpty()) {
-            Point point = checkPoint(points1, c1);
+            Point point = checkPoint(points3, c1);
             points.add(point);
         }
 
@@ -102,8 +102,7 @@ public class GeoUtils {
         y = y / points.size();
 
         return new Point(x, y);
-
-
+//        return points.get(0);
     }
 
 
@@ -125,12 +124,10 @@ public class GeoUtils {
 
 
     public Double getDistance(Point p1, Point p2) {
-        System.out.println(p1.toString() + p2.toString());
         Double x = new Double(Math.abs(p1.getX() - p2.getX()));
 
         Double y = new Double(Math.abs(p1.getY() - p2.getY()));
 
-        System.out.println(x + "---" + y);
         double distance = Math.sqrt(x * x + y * y);
 
         return distance;

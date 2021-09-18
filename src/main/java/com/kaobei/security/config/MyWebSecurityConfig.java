@@ -64,6 +64,8 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/socket/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/index.html").permitAll()
+                .antMatchers("/static/**").permitAll()
                 .anyRequest().authenticated();
 
 

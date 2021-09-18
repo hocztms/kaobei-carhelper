@@ -29,6 +29,8 @@ public class ParkEntity {
 
     private Integer status;
 
+    private Double charge;
+
     @Version
     private Integer version;
 }

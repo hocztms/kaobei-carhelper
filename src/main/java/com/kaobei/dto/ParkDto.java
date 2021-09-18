@@ -20,5 +20,6 @@ public class ParkDto {
     private Double lng;
     private Double lat;
     private Integer placeNum;
+    private Double charge;
     private Integer status;
 }

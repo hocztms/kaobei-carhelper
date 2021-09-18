@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kaobei.commons.Circle;
 import com.kaobei.commons.Point;
 import com.kaobei.commons.RestResult;
+import com.kaobei.dto.AdminDto;
 import com.kaobei.entity.UserEntity;
 import com.kaobei.entity.UserRoleEntity;
 import com.kaobei.dto.PlaceDto;
@@ -31,8 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -57,9 +57,12 @@ public class UserServiceImpl implements UserService {
     private DeviceService deviceService;
     @Resource
     private RedisGeoUtils redisGeoUtils;
-
     @Resource
     private GeoUtils geoUtils;
+    @Resource
+    private ComplaintService complaintService;
+    @Resource
+    private AdminService adminService;
 
 
     @Override
@@ -78,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserByOpenId(UserEntity userEntity) {
         QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq("open_id", userEntity);
+        wrapper.eq("open_id", userEntity.getOpenId());
         userMapper.update(userEntity,wrapper);
     }
 
@@ -171,6 +174,10 @@ public class UserServiceImpl implements UserService {
     public RestResult userGrabParkPlace(Long parkId, String openId) {
         try {
             UserEntity userEntity = findUserByOpenId(openId);
+
+            if (userEntity.getAmount()<=0){
+                return ResultUtils.error("当前账户余额不足");
+            }
 
             ParkEntity parkEntity = parkService.findParkById(parkId);
 
@@ -311,16 +318,160 @@ public class UserServiceImpl implements UserService {
 
 
             Point point = GeoUtils.posParseToPoint(placeById.getLng(),placeById.getLat());
-            Circle c1 = new Circle();
-            Circle c2 = new Circle();
-            Circle c3 = new Circle();
+
+
+            List<Circle> circles = new ArrayList<>();
             List<DeviceVo.Device> list = deviceVo.getList();
             for (DeviceVo.Device device:list){
                 DeviceEntity parkDevice = deviceService.findDeviceByWordArea(record.getParkId(), device.getDeviceNumber());
-//                c1.setCircle(GeoUtils.posParseToPoint(parkDevice.getLng(),parkDevice.getLat(),device.getDistance()));
+                if (parkDevice==null){
+                    return ResultUtils.error("设备不存在");
+                }
+                circles.add(new Circle(GeoUtils.posParseToPoint(parkDevice.getLng(),parkDevice.getLat()),device.getDistance()));
             }
 
-            return null;
+            if (circles.size()!=3){
+                return ResultUtils.error("格式出错");
+            }
+
+            Point realTimePoint = geoUtils.getRealTimePoint(circles.get(0), circles.get(1), circles.get(2));
+
+            Double distance =  geoUtils.getDistance(realTimePoint, point);
+
+
+            return ResultUtils.success(Math.sqrt(distance));
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userParking(DeviceVo deviceVo, String openId) {
+        try {
+            ParkRecordEntity record = parkRecordService.getUserIsParkByOpenId(openId);
+
+
+            if (record==null){
+                return ResultUtils.error("错误操作");
+            }
+
+            if (record.getStartTime()!=null){
+                return ResultUtils.error("请勿重复操作");
+            }
+
+
+            ParkPlaceEntity placeById = placeService.findPlaceById(record.getPlaceId());
+
+
+            Point point = GeoUtils.posParseToPoint(placeById.getLng(),placeById.getLat());
+
+
+            List<Circle> circles = new ArrayList<>();
+            List<DeviceVo.Device> list = deviceVo.getList();
+            for (DeviceVo.Device device:list){
+                DeviceEntity parkDevice = deviceService.findDeviceByWordArea(record.getParkId(), device.getDeviceNumber());
+                if (parkDevice==null){
+                    return ResultUtils.error("设备不存在");
+                }
+                circles.add(new Circle(GeoUtils.posParseToPoint(parkDevice.getLng(),parkDevice.getLat()),device.getDistance()));
+            }
+
+            if (circles.size()!=3){
+                return ResultUtils.error("格式出错");
+            }
+
+            Point realTimePoint = geoUtils.getRealTimePoint(circles.get(0), circles.get(1), circles.get(2));
+
+            Double distance =  geoUtils.getDistance(realTimePoint, point);
+
+            if (Math.sqrt(distance)>10.00){
+
+                return ResultUtils.error("请到指定地点停车");
+            }
+
+            record.setStartTime(new Date());
+
+            parkRecordService.updateRecord(record);
+
+            redisTemplate.delete("delay::" + record.getRecordId());
+            return ResultUtils.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userEndPark(String openId) {
+        try {
+            ParkRecordEntity record = parkRecordService.getUserIsParkByOpenId(openId);
+            if (record==null||record.getStartTime() ==null){
+                return ResultUtils.error("错误操作");
+            }
+            if (record.getEndTime()!=null){
+                return ResultUtils.error("请勿重复操作");
+            }
+
+
+            record.setEndTime(new Date());
+
+            long time = record.getEndTime().getTime() - record.getStartTime().getTime();
+
+            long remainder = time%(1000 * 60 * 60);
+
+            long hour = time / (1000 * 60 * 60);
+
+            if (remainder!=0){
+                hour++;
+            }
+
+            ParkEntity parkEntity = parkService.findParkById(record.getParkId());
+            double cost = hour * parkEntity.getCharge();
+            record.setCost(cost);
+            record.setStatus(1);
+            parkRecordService.updateRecord(record);
+
+            UserEntity userEntity = findUserByOpenId(record.getOpenId());
+            double amount = userEntity.getAmount() - cost;
+            userEntity.setAmount(amount);
+
+            updateUserByOpenId(userEntity);
+
+            parkEntity.setPlaceNum(parkEntity.getPlaceNum() + 1);
+            parkService.updateParkById(parkEntity);
+
+
+            String msg = "您的停车已经完成 共计:" + cost + "元";
+            return ResultUtils.success();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultUtils.systemError();
+        }
+    }
+
+    @Override
+    public RestResult userFeedBack(ComplaintVo complaintVo, String openId) {
+        try {
+
+            ComplaintEntity complaint = ComplaintEntity.builder()
+                    .complaint_id(0L)
+                    .content(complaintVo.getContent())
+                    .openId(openId)
+                    .status(0)
+                    .parkId(complaintVo.getParkId())
+                    .build();
+
+            complaintService.insertComplaint(complaint);
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<AdminDto> adminEntities = adminService.findParkAdminList(complaint.getParkId());
+                }
+            });
+
+            return ResultUtils.success();
         }catch (Exception e){
             e.printStackTrace();
             return ResultUtils.systemError();

@@ -1,7 +1,10 @@
 package com.kaobei;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.Pos;
+import com.kaobei.dto.ParkDto;
 import com.kaobei.entity.DeviceEntity;
+import com.kaobei.entity.UserEntity;
 import com.kaobei.mapper.ParkMapper;
 import com.kaobei.service.*;
 import com.kaobei.utils.GeoUtils;
@@ -11,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
-
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class KaobeiKaobeiCarhelperApplicationTests {
 
     @Autowired
@@ -73,14 +74,15 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        System.out.println(longList.toString());
 
 //        deviceService.insertDevice(new DeviceEntity(0L,1L,"w",00.00,00.00));
-        double distance = redisGeoUtils.getDistance(new Pos(119.19351, 26.05345), new Pos(119.19159, 26.05231));
-        System.out.println(distance);
-
-
-        Double distance1 = geoUtils.getDistance(GeoUtils.posParseToPoint(26.05345, 119.19351), GeoUtils.posParseToPoint(26.05231, 119.19159));
-        System.out.println(distance1.toString());
-
-
+//        double distance = redisGeoUtils.getDistance(new Pos(119.19153, 26.05112), new Pos(119.19146, 26.05115));
+//        System.out.println(distance);
+//
+//
+//        Double distance1 = geoUtils.getDistance(GeoUtils.posParseToPoint(119.19146, 26.05115), GeoUtils.posParseToPoint(119.19153, 26.05112));
+//        System.out.println(distance1.toString());
+        UserEntity userByOpenId = userService.findUserByOpenId("123456");
+        userByOpenId.setCarNumber("123123123132");
+        userService.updateUserByOpenId(userByOpenId);
     }
 
 }

@@ -56,6 +56,7 @@ public class AreaAdminServiceImpl implements AreaAdminService {
                     .parkPlaceSum(0)
                     .placeNum(0)
                     .status(1)
+                    .charge(parkVo.getCharge())
                     .version(0)
                     .build();
 

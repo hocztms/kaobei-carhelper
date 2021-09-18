@@ -1,5 +1,6 @@
 package com.kaobei.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.ParkRecordService;
@@ -72,13 +73,46 @@ public class UserController {
         return userService.userCancelPark(account);
     }
 
-
+    /*
+    室内定位距离
+     */
     @PostMapping( "/getPlaceDis")
     public RestResult getPlaceDis(@Validated @RequestBody DeviceVo deviceVo, HttpServletRequest request) {
-        System.out.println(deviceVo.toString());
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
 
-
         return userService.userGetParkPlaceDis(deviceVo,account);
+    }
+
+
+    /*
+    停车接口
+     */
+    @PostMapping( "/parking")
+    public RestResult parking(@Validated @RequestBody DeviceVo deviceVo, HttpServletRequest request) {
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+        return userService.userParking(deviceVo,account);
+    }
+
+    /*
+    停车结束接口
+     */
+
+    @PutMapping( "/endPark")
+    public RestResult endPark( HttpServletRequest request) {
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+        return userService.userEndPark(account);
+    }
+
+    /*
+    用户反馈接口
+     */
+
+    @PostMapping( "/feedBack")
+    public RestResult feedBack(@Validated@RequestBody ComplaintVo complaintVo,HttpServletRequest request) {
+        String account = jwtTokenUtils.getAuthAccountFromRequest(request);
+
+        return userService.userFeedBack(complaintVo,account);
     }
 }

@@ -1,6 +1,4 @@
 package com.kaobei.controller;
-
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kaobei.commons.RestResult;
 import com.kaobei.service.AuthService;
@@ -15,9 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @RequestMapping("/auth")
 @PreAuthorize("permitAll()")

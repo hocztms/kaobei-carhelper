@@ -19,7 +19,11 @@ public class Circle {
     private double r;
 
 
-
+    public Circle(Point point,Double r){
+        this.x = point.getX();
+        this.y = point.getY();
+        this.r = r;
+    }
     public List<Point> getIntersectPoints(Circle circle){
 
 
