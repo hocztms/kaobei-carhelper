@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
                             Long recordId = parkRecordEntity.getRecordId();
 
                             try {
-                                Thread.sleep(5*1000*1);
+                                Thread.sleep(60*1000*10);
                             }catch (Exception e){
                                 e.printStackTrace();
                             }

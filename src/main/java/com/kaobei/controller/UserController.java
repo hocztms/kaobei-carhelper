@@ -3,6 +3,7 @@ package com.kaobei.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kaobei.commons.RestResult;
+import com.kaobei.entity.ParkRecordEntity;
 import com.kaobei.service.ParkRecordService;
 import com.kaobei.service.ParkService;
 import com.kaobei.service.UserService;
@@ -53,7 +54,15 @@ public class UserController {
     @PostMapping( "/verifyPark")
     public RestResult verifyPark(HttpServletRequest request){
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
-        return ResultUtils.success(parkRecordService.getUserIsParkByOpenId(account));
+        ParkRecordEntity userIsParkByOpenId = parkRecordService.getUserIsParkByOpenId(account);
+
+        RestResult restResult = ResultUtils.success();
+        restResult.putData(userIsParkByOpenId);
+        if (userIsParkByOpenId.getStartTime()!=null){
+            restResult.put("isPark",true);
+        }
+        restResult.put("isPark",false);
+        return restResult;
     }
 
 
@@ -120,11 +129,10 @@ public class UserController {
     用户获取常用停车场
      */
 
-    @GetMapping( "/getCommonPark")
-    public RestResult getCommonPark(long page,
-            long size,HttpServletRequest request) {
+    @PostMapping( "/getCommonPark")
+    public RestResult getCommonPark(@Validated@RequestBody GetCommonParkVo getCommonParkVo,HttpServletRequest request) {
         String account = jwtTokenUtils.getAuthAccountFromRequest(request);
 
-        return userService.userGetCommonPark(account,new Page(page,size));
+        return userService.userGetCommonPark(account,new Page(getCommonParkVo.getPage(),getCommonParkVo.getSize()));
     }
 }
