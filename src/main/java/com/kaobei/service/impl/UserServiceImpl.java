@@ -492,11 +492,12 @@ public class UserServiceImpl implements UserService {
                 public void run() {
                     List<AdminDto> adminEntities = adminService.findParkAdminList(complaint.getParkId());
                     for (AdminDto adminDto:adminEntities){
-                        webSocketServer.sendInfo(adminDto.getUsername(),new SocketMessage(1,"您有新的反馈消息待处理...").toString());
+                        webSocketServer.sendInfo(adminDto.getUsername(),new SocketMessage(1,"您有新的反馈消息待处理..."));
                     }
                 }
             });
 
+            thread.start();
             return ResultUtils.success();
         }catch (Exception e){
             e.printStackTrace();

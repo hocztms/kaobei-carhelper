@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class KaobeiKaobeiCarhelperApplicationTests {
 
@@ -73,9 +75,9 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        ParkEntity parkEntity = parkMapper.selectOne(wrapper);
 //        System.out.println(parkEntity.toString());
 //
-//        List<Long> longList = redisGeoUtils.geoGetParkLIdListByNear(119.01, 26.01, 1000.00, 10);
-//
-//        System.out.println(longList.toString());
+        List<Long> longList = redisGeoUtils.geoGetParkLIdListByNear(119.13139, 26.15021, 1000.00, 10);
+
+        System.out.println(longList.toString());
 
 //        deviceService.insertDevice(new DeviceEntity(0L,1L,"w",00.00,00.00));
 //        double distance = redisGeoUtils.getDistance(new Pos(119.19153, 26.05112), new Pos(119.19146, 26.05115));
@@ -88,7 +90,7 @@ class KaobeiKaobeiCarhelperApplicationTests {
 //        userByOpenId.setCarNumber("123123123132");
 //        userService.updateUserByOpenId(userByOpenId);
 
-        complaintService.insertComplaint(new ComplaintEntity(0L,"123456",0L,"123456",0));
+//        complaintService.insertComplaint(new ComplaintEntity(0L,"123456",0L,"123456",0));
     }
 
 }

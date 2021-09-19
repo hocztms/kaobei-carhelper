@@ -1,6 +1,7 @@
 package com.kaobei.webSocket;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.kaobei.utils.JwtTokenUtils;
 import com.kaobei.vo.SocketMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,9 @@ public class WebSocketServer {
     /*
     发送消息
      */
-    public void sendMessage(Session session, String message) throws IOException{
+    public void sendMessage(Session session,Object message) throws IOException{
         if(session != null){
-            session.getBasicRemote().sendText(message);
+            session.getBasicRemote().sendText(JSONObject.toJSONString(message));
         }
     }
 
@@ -81,8 +82,8 @@ public class WebSocketServer {
         sessionPools.put(userName, session);
         log.info(userName + "加入webSocket！当前人数为" + online);
         try {
-            sendMessage(session, "欢迎" + userName + "加入连接！");
-        } catch (IOException e) {
+            sendMessage(session,new SocketMessage(1,"欢迎" + userName + "加入连接!"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -103,7 +104,7 @@ public class WebSocketServer {
 
         if (session!=null&&session.isOpen()){
            try {
-               onMessage(session, JSON.toJSONString(new SocketMessage(-1,username+"连接已断开")));
+               sendMessage(session, new SocketMessage(-1,username+"连接已断开"));
                sessionPools.remove(username);
                subOnlineCount();
            }catch (Exception e){
@@ -119,7 +120,6 @@ public class WebSocketServer {
      */
     @OnMessage
     public void onMessage(Session session,String message) throws IOException{
-        System.out.println(message);
         sendMessage(session,"这边建议直接加vx聊天");
     }
 
@@ -135,7 +135,7 @@ public class WebSocketServer {
     /*
     向指定用户发送
      */
-    public void sendInfo(String userName, String message){
+    public void sendInfo(String userName, Object message){
         Session session = sessionPools.get(userName);
         if (session==null){
             log.warn(userName + "  未登录.....");
