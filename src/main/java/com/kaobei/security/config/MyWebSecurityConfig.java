@@ -1,6 +1,7 @@
 package com.kaobei.security.config;
 
 
+import com.kaobei.filters.IpLimitFilter;
 import com.kaobei.security.hander.MyAccessDeniedHandler;
 import com.kaobei.security.hander.MyAuthenticationEntryPoint;
 import com.kaobei.security.hander.MyLogoutSuccessHandler;
@@ -37,6 +38,8 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private XssFilter xssFilter;
+    @Autowired
+    private IpLimitFilter ipLimitFilter;
 
 
     @Override
@@ -80,6 +83,10 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
         //xss防护
         http.addFilterAfter(xssFilter, CsrfFilter.class);
+        /*
+        ip限流
+         */
+        http.addFilterBefore(ipLimitFilter,CsrfFilter.class);
         http.csrf().disable();
         http.cors();
     }

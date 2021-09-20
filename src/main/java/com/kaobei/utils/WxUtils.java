@@ -17,21 +17,20 @@ public class WxUtils {
     public static final String WX_GRANT_TYPE = "authorization_code";
 
     public String getOpenIdByCode(String code) {
-//        Map<String, String> data = new HashMap<String, String>();
-//        data.put("appid", WX_APPID);
-//        data.put("secret", WX_SECRET);
-//        data.put("js_code", code);
-//        data.put("grant_type",WX_GRANT_TYPE);
-//
-//
-//        String response = HttpRequest.get(WX_LOGIN_URL).form(data).body();
-//        System.out.println("Response was: " + response);
-//        JSONObject obj= JSON.parseObject(response);//将json字符串转换为json对
-//        System.out.println(obj.toJSONString().toString());
-//        String openId = (String) obj.get("openid");
-//        System.out.println(openId);
-//        return openId;
-        return "123456";
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("appid", WX_APPID);
+        data.put("secret", WX_SECRET);
+        data.put("js_code", code);
+        data.put("grant_type",WX_GRANT_TYPE);
+
+
+        String response = HttpRequest.get(WX_LOGIN_URL).form(data).body();
+        System.out.println("Response was: " + response);
+        JSONObject obj= JSON.parseObject(response);//将json字符串转换为json对
+        System.out.println(obj.toJSONString().toString());
+        String openId = (String) obj.get("openid");
+        System.out.println(openId);
+        return openId;
     }
 
 }
